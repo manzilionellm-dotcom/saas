@@ -23,6 +23,9 @@ export default function AuditPage() {
   const [result, setResult] = useState<AuditResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fixes, setFixes] = useState<string | null>(null);
+  const [fixLoading, setFixLoading] = useState(false);
+  const [fixError, setFixError] = useState<string | null>(null);
 
   async function analyze() {
     const u = url.trim();
@@ -33,6 +36,8 @@ export default function AuditPage() {
     setError(null);
     setLoading(true);
     setResult(null);
+    setFixes(null);
+    setFixError(null);
     try {
       const res = await fetch("/api/audit", {
         method: "POST",
@@ -46,6 +51,27 @@ export default function AuditPage() {
       setError(e instanceof Error ? e.message : "Erreur inattendue.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function requestFixes() {
+    if (!result) return;
+    setFixError(null);
+    setFixLoading(true);
+    setFixes(null);
+    try {
+      const res = await fetch("/api/fix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ audit: result }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Erreur");
+      setFixes(data.fixes as string);
+    } catch (e) {
+      setFixError(e instanceof Error ? e.message : "Erreur inattendue.");
+    } finally {
+      setFixLoading(false);
     }
   }
 
@@ -135,6 +161,35 @@ export default function AuditPage() {
                 </div>
               );
             })}
+
+            {/* Versailles rédige les corrections (IA Claude) */}
+            <div className="mt-8">
+              <button
+                type="button"
+                onClick={requestFixes}
+                disabled={fixLoading}
+                className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-60"
+              >
+                {fixLoading ? "Versailles rédige…" : "✍️ Versailles rédige les corrections"}
+              </button>
+
+              {fixError && (
+                <p className="mt-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                  {fixError}
+                </p>
+              )}
+
+              {fixes && (
+                <div className="mt-4 rounded-2xl border border-indigo-200 bg-white p-5 dark:border-indigo-900 dark:bg-zinc-900">
+                  <p className="mb-2 text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+                    👑 Corrections proposées par Versailles
+                  </p>
+                  <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-sm leading-6 text-zinc-800 dark:text-zinc-200">
+                    {fixes}
+                  </pre>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </main>
