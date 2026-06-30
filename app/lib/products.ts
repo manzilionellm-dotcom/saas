@@ -127,6 +127,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "ai-acquisition-finder",
+    name: "AI Acquisition Finder",
+    tagline: "Dénichez la prochaine pépite à racheter",
+    description:
+      "Trouve des entreprises SaaS sous-évaluées ou des projets à reprendre, estime leur potentiel de croissance et vous aide à préparer une acquisition de A à Z.",
+    category: "Intelligence",
+    icon: "🤝",
+    monthlyPrice: 149,
+    features: [
+      "Détection de SaaS sous-évalués",
+      "Projets à reprendre",
+      "Estimation du potentiel de croissance",
+      "Évaluation & valorisation",
+      "Préparation du dossier d'acquisition",
+      "Analyse des risques",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
