@@ -41,6 +41,16 @@ const ADVISORS: AdvisorDef[] = [
     ],
   },
   {
+    category: "GEO / AEO",
+    role: "Stratège GEO/AEO",
+    icon: "🔎",
+    angles: [
+      "visons à être cités par ChatGPT, Perplexity et les AI Overviews : contenu structuré, factuel, sourcé.",
+      "je lance une veille 24h/24 des nouveaux mots-clés et des nouveaux moteurs de réponse pour prendre l'avance.",
+      "structurons les pages en questions/réponses claires : c'est ce que les moteurs de réponse adorent citer.",
+    ],
+  },
+  {
     category: "Marketing",
     role: "Responsable Marketing",
     icon: "🎯",
