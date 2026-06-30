@@ -146,6 +146,26 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "personal-ai-workforce",
+    name: "Personal AI Workforce",
+    tagline: "Votre équipe d'agents IA qui travaille pour vous",
+    description:
+      "Disposez de plusieurs agents IA spécialisés — marketing, ventes, finance, juridique, développement et recherche — qui collaborent entre eux pour exécuter vos projets de bout en bout, comme une véritable équipe.",
+    category: "Intelligence",
+    icon: "👥",
+    monthlyPrice: 159,
+    features: [
+      "Agent Marketing",
+      "Agent Ventes",
+      "Agent Finance",
+      "Agent Juridique",
+      "Agent Développement",
+      "Agent Recherche",
+      "Collaboration inter-agents",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
