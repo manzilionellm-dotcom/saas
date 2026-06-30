@@ -89,6 +89,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "global-video-factory",
+    name: "Global Video Factory",
+    tagline: "Une vidéo, tous les formats, toutes les langues",
+    description:
+      "Importez une seule vidéo : elle est automatiquement déclinée en versions adaptées à TikTok, Instagram, YouTube, Facebook, LinkedIn et X, puis traduite en plusieurs langues avec doublage et sous-titres.",
+    category: "Vidéo",
+    icon: "🎬",
+    monthlyPrice: 89,
+    features: [
+      "Reformatage automatique (TikTok, Instagram, YouTube, Facebook, LinkedIn, X)",
+      "Versions multilingues",
+      "Doublage automatique",
+      "Sous-titres générés",
+      "Recadrage intelligent par plateforme",
+      "Publication programmée",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
