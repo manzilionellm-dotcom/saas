@@ -7,6 +7,12 @@ import {
   type DailyBrief,
   type Competitor,
   type LLMLog,
+  type BusinessGenome,
+  type GenomeSnapshot,
+  type Decision,
+  type Conversation,
+  type ChatMessage,
+  type PromptVersion,
   type DBShape,
   emptyDB,
 } from "./types";
@@ -27,10 +33,31 @@ export interface Repository {
 
   addGeneration(data: Omit<Generation, "id" | "createdAt">): Promise<Generation>;
   listGenerations(businessId: string): Promise<Generation[]>;
+  getGeneration(id: string): Promise<Generation | null>;
 
   addResult(data: Omit<Result, "id" | "recordedAt">): Promise<Result>;
+  listResults(businessId: string): Promise<Result[]>;
+  resultsByGeneration(generationId: string): Promise<Result[]>;
+
   addBrief(data: Omit<DailyBrief, "id" | "date">): Promise<DailyBrief>;
+  latestBrief(businessId: string): Promise<DailyBrief | null>;
   addCompetitor(data: Omit<Competitor, "id" | "updatedAt">): Promise<Competitor>;
+
+  saveGenome(businessId: string, snapshot: GenomeSnapshot, dataPoints: number): Promise<BusinessGenome>;
+  getGenome(businessId: string): Promise<BusinessGenome | null>;
+
+  addDecision(data: Omit<Decision, "id" | "date">): Promise<Decision>;
+  latestDecision(businessId: string): Promise<Decision | null>;
+
+  getConversation(businessId: string): Promise<Conversation | null>;
+  appendConversation(businessId: string, msgs: ChatMessage[]): Promise<Conversation>;
+
+  listPromptVersions(): Promise<PromptVersion[]>;
+  seedPromptVersions(versions: Omit<PromptVersion, "id" | "createdAt">[]): Promise<void>;
+  setDefaultPrompt(kind: string, version: string): Promise<void>;
+
+  allGenerations(): Promise<Generation[]>;
+  allResults(): Promise<Result[]>;
 
   addLLMLog(data: Omit<LLMLog, "id" | "createdAt">): Promise<LLMLog>;
   listLLMLogs(limit?: number): Promise<LLMLog[]>;
@@ -166,6 +193,118 @@ class JsonRepository implements Repository {
   async listLLMLogs(limit = 50): Promise<LLMLog[]> {
     const db = await this.load();
     return [...db.llmLogs].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, limit);
+  }
+
+  async getGeneration(id: string): Promise<Generation | null> {
+    const db = await this.load();
+    return db.generations.find((g) => g.id === id) ?? null;
+  }
+
+  async listResults(businessId: string): Promise<Result[]> {
+    const db = await this.load();
+    const genIds = new Set(db.generations.filter((g) => g.businessId === businessId).map((g) => g.id));
+    return db.results.filter((r) => genIds.has(r.generationId));
+  }
+
+  async resultsByGeneration(generationId: string): Promise<Result[]> {
+    const db = await this.load();
+    return db.results.filter((r) => r.generationId === generationId);
+  }
+
+  async latestBrief(businessId: string): Promise<DailyBrief | null> {
+    const db = await this.load();
+    return (
+      db.dailyBriefs
+        .filter((b) => b.businessId === businessId)
+        .sort((a, b) => b.date.localeCompare(a.date))[0] ?? null
+    );
+  }
+
+  async saveGenome(businessId: string, snapshot: GenomeSnapshot, dataPoints: number): Promise<BusinessGenome> {
+    const db = await this.load();
+    const updatedAt = nowIso();
+    const existing = db.genomes.find((g) => g.businessId === businessId);
+    if (existing) {
+      existing.snapshot = snapshot;
+      existing.dataPoints = dataPoints;
+      existing.updatedAt = updatedAt;
+      await this.persist(db);
+      return existing;
+    }
+    const genome: BusinessGenome = { businessId, snapshot, dataPoints, updatedAt };
+    db.genomes.push(genome);
+    await this.persist(db);
+    return genome;
+  }
+
+  async getGenome(businessId: string): Promise<BusinessGenome | null> {
+    const db = await this.load();
+    return db.genomes.find((g) => g.businessId === businessId) ?? null;
+  }
+
+  async addDecision(data: Omit<Decision, "id" | "date">): Promise<Decision> {
+    const db = await this.load();
+    const decision: Decision = { ...data, id: newId(), date: nowIso() };
+    db.decisions.push(decision);
+    await this.persist(db);
+    return decision;
+  }
+
+  async latestDecision(businessId: string): Promise<Decision | null> {
+    const db = await this.load();
+    return (
+      db.decisions.filter((d) => d.businessId === businessId).sort((a, b) => b.date.localeCompare(a.date))[0] ?? null
+    );
+  }
+
+  async getConversation(businessId: string): Promise<Conversation | null> {
+    const db = await this.load();
+    return db.conversations.find((c) => c.businessId === businessId) ?? null;
+  }
+
+  async appendConversation(businessId: string, msgs: ChatMessage[]): Promise<Conversation> {
+    const db = await this.load();
+    let convo = db.conversations.find((c) => c.businessId === businessId);
+    if (!convo) {
+      convo = { businessId, messages: [], updatedAt: nowIso() };
+      db.conversations.push(convo);
+    }
+    convo.messages.push(...msgs);
+    convo.updatedAt = nowIso();
+    await this.persist(db);
+    return convo;
+  }
+
+  async listPromptVersions(): Promise<PromptVersion[]> {
+    const db = await this.load();
+    return db.promptVersions;
+  }
+
+  async seedPromptVersions(versions: Omit<PromptVersion, "id" | "createdAt">[]): Promise<void> {
+    const db = await this.load();
+    for (const v of versions) {
+      const exists = db.promptVersions.some((p) => p.kind === v.kind && p.version === v.version);
+      if (!exists) db.promptVersions.push({ ...v, id: newId(), createdAt: nowIso() });
+    }
+    await this.persist(db);
+  }
+
+  async setDefaultPrompt(kind: string, version: string): Promise<void> {
+    const db = await this.load();
+    for (const p of db.promptVersions) {
+      if (p.kind === kind) p.isDefault = p.version === version;
+    }
+    await this.persist(db);
+  }
+
+  async allGenerations(): Promise<Generation[]> {
+    const db = await this.load();
+    return db.generations;
+  }
+
+  async allResults(): Promise<Result[]> {
+    const db = await this.load();
+    return db.results;
   }
 
   async isSeeded(): Promise<boolean> {

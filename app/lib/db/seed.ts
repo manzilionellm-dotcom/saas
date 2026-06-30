@@ -1,8 +1,15 @@
 import { repo } from "./repo";
+import { KINDS } from "../prompts";
 
 // Exigence évolutive n°9 : l'app n'est jamais vide au premier lancement.
-// Crée des business de démo une seule fois (idempotent).
+// Crée des business de démo + les versions de prompts une seule fois (idempotent).
 export async function ensureSeed(): Promise<void> {
+  // Toujours s'assurer que les versions de prompts existent (Phase 8).
+  await repo.seedPromptVersions([
+    ...KINDS.map((k) => ({ kind: k.key, version: "v1", body: `Template ${k.label} — v1 (par défaut).`, isDefault: true, status: "active" as const })),
+    { kind: "hooks", version: "v2", body: "Template hooks — v2 (variante en test : accroches plus provocantes).", isDefault: false, status: "testing" as const },
+  ]);
+
   if (await repo.isSeeded()) return;
 
   await repo.createBusiness({

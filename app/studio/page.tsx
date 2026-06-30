@@ -30,12 +30,17 @@ export default async function StudioPage() {
               Le moteur réel derrière Versailles. Tes business, leur voix et leurs langues.
             </p>
           </div>
-          <Link
-            href="/studio/business/new"
-            className="rounded-xl bg-indigo-600 px-5 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700"
-          >
-            + Nouveau business
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/studio/prompts" className="rounded-xl border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:text-zinc-300">
+              🧪 Prompt Studio
+            </Link>
+            <Link
+              href="/studio/business/new"
+              className="rounded-xl bg-indigo-600 px-5 py-2.5 font-semibold text-white transition-colors hover:bg-indigo-700"
+            >
+              + Nouveau business
+            </Link>
+          </div>
         </div>
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
