@@ -166,6 +166,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "ai-investment-radar",
+    name: "AI Investment Radar",
+    tagline: "La recherche de marché, augmentée par l'IA",
+    description:
+      "Analyse les marchés, les startups et les tendances économiques pour fournir des informations de recherche claires et synthétiques. Outil d'aide à la recherche uniquement : aucune promesse de gains ni conseil en investissement.",
+    category: "Intelligence",
+    icon: "📡",
+    monthlyPrice: 129,
+    features: [
+      "Analyse des marchés",
+      "Veille sur les startups",
+      "Suivi des tendances économiques",
+      "Synthèses de recherche",
+      "Tableaux de bord personnalisables",
+      "Informations à but de recherche uniquement",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
