@@ -70,6 +70,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "world-automation-os",
+    name: "World Automation OS",
+    tagline: "Le système d'exploitation de vos automatisations",
+    description:
+      "Connecte des centaines de services et automatise vos tâches répétitives grâce à des agents IA. Décrivez le résultat voulu, les agents orchestrent les outils et exécutent le travail à votre place.",
+    category: "Intelligence",
+    icon: "⚙️",
+    monthlyPrice: 109,
+    features: [
+      "Connexion à des centaines de services",
+      "Agents IA autonomes",
+      "Automatisation des tâches répétitives",
+      "Orchestration multi-outils",
+      "Déclencheurs & scénarios",
+      "Exécution surveillée en temps réel",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
