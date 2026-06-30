@@ -122,6 +122,51 @@ export default function SilkRoutePage() {
               </p>
             </div>
 
+            {/* Détails experts du meilleur choix */}
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <p className="mb-2 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                  💰 Coût d&apos;atterrissage (tout compris)
+                </p>
+                <dl className="grid grid-cols-2 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  <dt>Article</dt><dd className="text-right">{result.best.itemPrice} €</dd>
+                  <dt>Port → Suède</dt><dd className="text-right">{result.best.shipping} €</dd>
+                  <dt>Douane</dt><dd className="text-right">{result.best.customsDuty} €</dd>
+                  <dt>TVA 25 %</dt><dd className="text-right">{result.best.vat} €</dd>
+                  <dt>Frais d&apos;agent</dt><dd className="text-right">{result.best.agentFee} €</dd>
+                  <dt>Change/paiement</dt><dd className="text-right">{result.best.paymentFee} €</dd>
+                  <dt>Assurance</dt><dd className="text-right">{result.best.insurance} €</dd>
+                  <dt className="font-semibold text-zinc-800 dark:text-zinc-200">Total</dt>
+                  <dd className="text-right font-bold text-zinc-900 dark:text-zinc-50">{result.best.total} €</dd>
+                </dl>
+              </div>
+              <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <p className="mb-2 text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+                  🔬 Fiabilité & impact
+                </p>
+                <dl className="grid grid-cols-2 gap-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                  <dt>Livraison</dt><dd className="text-right">{result.best.deliveryDays} j</dd>
+                  <dt>Taux de remboursement</dt><dd className="text-right">{result.best.refundRate} %</dd>
+                  <dt>Taux de réponse</dt><dd className="text-right">{result.best.responseRate} %</dd>
+                  <dt>Taux de réachat</dt><dd className="text-right">{result.best.reorderRate} %</dd>
+                  <dt>Risque contrefaçon</dt><dd className="text-right">{result.best.counterfeitRisk}</dd>
+                  <dt>Empreinte CO₂</dt><dd className="text-right">{result.best.co2Kg} kg</dd>
+                </dl>
+              </div>
+            </div>
+
+            {/* Insights que SilkRoute calcule pour vous */}
+            <div className="mt-3 rounded-2xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900 dark:bg-indigo-950/40">
+              <p className="mb-2 text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+                💡 Détails experts (ce qu&apos;un humain ne calcule pas)
+              </p>
+              <ul className="space-y-1.5 text-sm text-indigo-900 dark:text-indigo-100">
+                {result.insights.map((ins, i) => (
+                  <li key={i}>{ins}</li>
+                ))}
+              </ul>
+            </div>
+
             {/* Alternative moins chère */}
             {result.cheaper && (
               <div className="mt-3 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
