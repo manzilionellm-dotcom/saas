@@ -19,6 +19,12 @@ export default function Home() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
+              href="/versailles"
+              className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+            >
+              👑 Poste de commandement Versailles
+            </Link>
+            <Link
               href="/meeting"
               className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
             >
