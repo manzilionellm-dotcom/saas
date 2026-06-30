@@ -51,6 +51,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "clone-anything-ai",
+    name: "Clone Anything AI",
+    tagline: "Reconstruisez n'importe quelle app, à votre façon",
+    description:
+      "À partir d'une application ou d'un site public, génère une architecture similaire (sans copier le code propriétaire), accompagnée d'un design moderne et d'une feuille de route de développement prête à l'emploi.",
+    category: "Intelligence",
+    icon: "🧬",
+    monthlyPrice: 119,
+    features: [
+      "Analyse d'apps & sites publics",
+      "Architecture technique générée",
+      "Design moderne proposé",
+      "Feuille de route de développement",
+      "Choix de la stack technique",
+      "Respect du code propriétaire (aucune copie)",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
