@@ -32,6 +32,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "billion-dollar-scanner",
+    name: "Billion Dollar Scanner",
+    tagline: "Détectez les opportunités à un milliard avant tout le monde",
+    description:
+      "Un scanner qui analyse des millions de données publiques pour faire émerger les meilleures opportunités : entreprises à vendre, noms de domaine oubliés, produits en pleine explosion, mots-clés rentables et niches sans concurrence.",
+    category: "Intelligence",
+    icon: "💰",
+    monthlyPrice: 129,
+    features: [
+      "Analyse de millions de données publiques",
+      "Entreprises à vendre",
+      "Noms de domaine oubliés à racheter",
+      "Produits en explosion",
+      "Mots-clés rentables",
+      "Niches sans concurrence",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
