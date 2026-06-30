@@ -4,10 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import type { AdvisorComment } from "../lib/advisors";
 
+type Chair = { name: string; role: string; icon: string };
+
 export default function MeetingPage() {
   const [question, setQuestion] = useState("");
+  const [chair, setChair] = useState<Chair | null>(null);
+  const [intro, setIntro] = useState<string>("");
   const [comments, setComments] = useState<AdvisorComment[]>([]);
-  const [summary, setSummary] = useState<string>("");
+  const [decision, setDecision] = useState<string>("");
   const [visible, setVisible] = useState(0); // nb de commentaires révélés
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,8 +24,10 @@ export default function MeetingPage() {
     }
     setError(null);
     setLoading(true);
+    setChair(null);
+    setIntro("");
     setComments([]);
-    setSummary("");
+    setDecision("");
     setVisible(0);
 
     try {
@@ -34,13 +40,15 @@ export default function MeetingPage() {
       if (!res.ok) throw new Error(data?.error ?? "Erreur");
 
       const list: AdvisorComment[] = data.comments;
+      setChair(data.chair);
       setComments(list);
 
-      // Révélation progressive : un intervenant après l'autre.
+      // Versailles ouvre, puis chaque pôle parle à son tour, puis Versailles tranche.
+      setTimeout(() => setIntro(data.intro), 300);
       list.forEach((_, i) => {
-        setTimeout(() => setVisible(i + 1), 450 * (i + 1));
+        setTimeout(() => setVisible(i + 1), 700 + 450 * i);
       });
-      setTimeout(() => setSummary(data.summary), 450 * (list.length + 1));
+      setTimeout(() => setDecision(data.decision), 700 + 450 * list.length);
     } catch {
       setError("Impossible de lancer la réunion. Réessaie.");
     } finally {
@@ -92,6 +100,25 @@ export default function MeetingPage() {
 
         {comments.length > 0 && (
           <div className="mt-8 space-y-3">
+            {intro && chair && (
+              <div className="flex gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-sm dark:border-amber-700 dark:bg-amber-950/40">
+                <span className="text-2xl" aria-hidden>
+                  {chair.icon}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                    {chair.name}{" "}
+                    <span className="font-normal text-amber-600/80 dark:text-amber-400/80">
+                      · {chair.role}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 text-amber-900 dark:text-amber-100">
+                    {intro}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {comments.slice(0, visible).map((c, i) => (
               <div
                 key={i}
@@ -120,13 +147,13 @@ export default function MeetingPage() {
               </p>
             )}
 
-            {summary && (
-              <div className="mt-4 rounded-2xl border border-indigo-200 bg-indigo-50 p-4 dark:border-indigo-900 dark:bg-indigo-950/40">
-                <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
-                  🧩 Synthèse du facilitateur
+            {decision && chair && (
+              <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-950/40">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                  {chair.icon} Décision de {chair.name}
                 </p>
-                <p className="mt-1 text-indigo-900 dark:text-indigo-100">
-                  {summary}
+                <p className="mt-1 text-amber-900 dark:text-amber-100">
+                  {decision}
                 </p>
               </div>
             )}

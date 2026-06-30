@@ -14,6 +14,26 @@ export type Product = {
 // Catalogue de produits SaaS (produits phares en tête)
 export const products: Product[] = [
   {
+    slug: "versailles",
+    name: "Versailles",
+    tagline: "Le chef d'orchestre qui pilote tous vos sites",
+    description:
+      "Versailles se connecte à l'ensemble de vos sites web et comptes (avec votre autorisation), comprend vos objectifs et exécute les tâches à votre place — par exemple « optimise le SEO de tous mes sites aujourd'hui ». Il orchestre aussi vos réunions d'équipe IA en tant que chef : il cadre la question, écoute chaque expert, tranche et lance les actions.",
+    category: "Intelligence",
+    icon: "👑",
+    monthlyPrice: 299,
+    features: [
+      "Connexion à tous vos sites & comptes (accès autorisé)",
+      "Exécution autonome des tâches (« optimise le SEO partout »)",
+      "Optimisation SEO multi-sites",
+      "Chef des réunions d'équipe IA",
+      "Décisions et plan d'actions",
+      "Validation des actions sensibles",
+      "Rapport d'exécution",
+    ],
+    featured: true,
+  },
+  {
     slug: "ai-company",
     name: "AI Company",
     tagline: "D'une idée à une entreprise complète, automatiquement",

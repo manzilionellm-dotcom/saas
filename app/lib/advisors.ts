@@ -180,14 +180,33 @@ export function runMeeting(question: string): AdvisorComment[] {
   });
 }
 
-// Petite synthèse de clôture (le facilitateur).
-export function meetingSummary(question: string): string {
-  const q = question.trim();
-  const seed = pickIndex(q, 3);
-  const closers = [
-    "Consensus : on cadre un MVP, on valide la demande avec quelques clients, et on mesure un indicateur clé avant d'investir.",
-    "À retenir : tester petit et vite, vérifier la rentabilité et le cadre légal, puis accélérer si les chiffres suivent.",
-    "Décision proposée : lancer une version minimale sous 2 semaines, suivre les données, et itérer selon les retours.",
+// Versailles préside la réunion.
+export const CHAIR = { name: "Versailles", role: "Chef de la réunion", icon: "👑" };
+
+function shorten(text: string, max = 90): string {
+  const t = text.trim();
+  return t.length > max ? t.slice(0, max - 1).trimEnd() + "…" : t;
+}
+
+// Ouverture de séance par Versailles.
+export function chairIntro(question: string): string {
+  const q = shorten(question);
+  const intros = [
+    `Bonjour à tous. Sujet du jour : « ${q} ». Je donne la parole à chaque pôle, puis je tranche.`,
+    `Ouvrons la séance. La question est : « ${q} ». Chacun son avis, je décide à la fin.`,
+    `À l'ordre du jour : « ${q} ». J'écoute l'équipe, puis je lance les actions.`,
   ];
-  return closers[seed];
+  return intros[pickIndex(question.trim(), intros.length)];
+}
+
+// Décision finale de Versailles : il tranche ET exécute.
+export function chairDecision(question: string): string {
+  const q = question.trim();
+  const plans = [
+    "on cadre un MVP, on valide la demande avec quelques clients, et on suit un indicateur clé avant d'investir",
+    "on teste petit et vite, on vérifie la rentabilité et le cadre légal, puis on accélère si les chiffres suivent",
+    "on lance une version minimale sous 2 semaines, on mesure, et on itère selon les retours",
+  ];
+  const plan = plans[pickIndex(q, plans.length)];
+  return `Décision : ${plan}. Je m'en occupe — je lance les actions sur vos sites et comptes connectés, et je vous fais un rapport d'exécution.`;
 }

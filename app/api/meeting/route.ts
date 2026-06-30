@@ -1,4 +1,4 @@
-import { runMeeting, meetingSummary } from "../../lib/advisors";
+import { runMeeting, chairIntro, chairDecision, CHAIR } from "../../lib/advisors";
 
 // POST /api/meeting  { question: string }  ->  { comments, summary }
 //
@@ -20,7 +20,12 @@ export async function POST(request: Request) {
   }
 
   const comments = runMeeting(question);
-  const summary = meetingSummary(question);
 
-  return Response.json({ question, comments, summary });
+  return Response.json({
+    question,
+    chair: CHAIR,
+    intro: chairIntro(question),
+    comments,
+    decision: chairDecision(question),
+  });
 }
