@@ -111,6 +111,16 @@ const ADVISORS: AdvisorDef[] = [
     ],
   },
   {
+    category: "Sourcing Chine",
+    role: "Expert Marché Chinois",
+    icon: "🇨🇳",
+    angles: [
+      "distingue usine et société commerciale : l'usine est la moins chère, l'intermédiaire gère l'export — vérifie toujours la business license.",
+      "côté livraison : express (rapide, cher) vs aérien vs maritime/groupage (le moins cher en volume) ; ajoute toujours le temps de production avant l'envoi.",
+      "méfie-toi des pièges : acompte sans retour, « quality fade », faux Gold Supplier — paie via escrow et fais inspecter avant l'expédition.",
+    ],
+  },
+  {
     category: "E-commerce",
     role: "Responsable E-commerce",
     icon: "📦",

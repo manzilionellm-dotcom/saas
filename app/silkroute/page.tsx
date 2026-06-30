@@ -41,9 +41,14 @@ export default function SilkRoutePage() {
   return (
     <div className="min-h-full bg-zinc-50 font-sans dark:bg-zinc-950">
       <main className="mx-auto max-w-3xl px-6 py-12">
-        <Link href="/" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
-          ← Retour au catalogue
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link href="/" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+            ← Retour au catalogue
+          </Link>
+          <Link href="/guide/chine" className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+            🇨🇳 Guide du marché chinois
+          </Link>
+        </div>
 
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           🐉 SilkRoute — la perfection au meilleur prix
