@@ -1,0 +1,93 @@
+// Schéma canonique de Viral AI OS (chemin de production).
+//
+// Dans ce bac à sable, Prisma ne peut pas télécharger ses binaires moteur
+// (politique réseau). La couche de données tourne donc via une abstraction
+// `Repository` (implémentation fichier JSON — voir app/lib/db/).
+//
+// Pour passer en production : `npm i prisma @prisma/client`, `npx prisma migrate dev`,
+// puis brancher une implémentation `PrismaRepository` derrière la même interface.
+// Passage SQLite -> PostgreSQL = changer `provider` ci-dessous.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id                String       @id @default(cuid())
+  name              String
+  businessType      String
+  country           String
+  locale            String // langue principale, ex "fr"
+  additionalLocales String? // JSON: ["ar","sv"]
+  targetCustomer    String
+  budget            String
+  mainGoal          String
+  brandVoice        String? // ton, couleurs, tagline, do/don't
+  notes             String?
+  createdAt         DateTime     @default(now())
+  generations       Generation[]
+  briefs            DailyBrief[]
+  competitors       Competitor[]
+}
+
+model Generation {
+  id            String     @id @default(cuid())
+  businessId    String
+  business      Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  platform      String
+  kind          String // hooks | script | post | hashtags | seo_title | ad_copy
+  locale        String
+  prompt        String
+  output        String
+  promptVersion String // version du template utilisé
+  tokensUsed    Int?
+  costEstimate  Float?
+  createdAt     DateTime   @default(now())
+  results       Result[]
+}
+
+model Result {
+  id           String     @id @default(cuid())
+  generationId String
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  views        Int?
+  likes        Int?
+  clicks       Int?
+  conversions  Int?
+  note         String?
+  recordedAt   DateTime   @default(now())
+}
+
+model DailyBrief {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  content    String // JSON: { angles[], stop, opportunity }
+  date       DateTime @default(now())
+}
+
+model Competitor {
+  id         String   @id @default(cuid())
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  name       String
+  source     String // meta_ad_library | ...
+  lastData   String? // JSON brut de la dernière récupération
+  updatedAt  DateTime @updatedAt
+}
+
+model LLMLog {
+  id         String   @id @default(cuid())
+  provider   String
+  input      String
+  output     String?
+  tokensUsed Int?
+  latencyMs  Int?
+  error      String?
+  createdAt  DateTime @default(now())
+}
