@@ -45,6 +45,17 @@ export function clearMemory(): void {
   if (typeof window !== "undefined") localStorage.removeItem(KEY);
 }
 
+// Sauvegarde / restauration (Keystone) : la mémoire survit à un navigateur effacé
+// ou à un changement d'appareil.
+export function replaceMemory(events: MemoryEvent[]): MemoryEvent[] {
+  if (typeof window === "undefined") return [];
+  const clean = events
+    .filter((e) => e && typeof e.text === "string" && typeof e.at === "string")
+    .slice(0, 1000);
+  localStorage.setItem(KEY, JSON.stringify(clean));
+  return clean;
+}
+
 export type Profile = {
   total: number;
   meetings: number;

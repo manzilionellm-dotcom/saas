@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getMemory, buildProfile, clearMemory, type MemoryEvent, type Profile } from "../lib/memory";
+import { getMemory, buildProfile, clearMemory, replaceMemory, type MemoryEvent, type Profile } from "../lib/memory";
 
 const TYPE_LABEL: Record<MemoryEvent["type"], string> = {
   meeting: "🗣️ Réunion",
@@ -28,6 +28,30 @@ export default function MemoryPage() {
   function handleClear() {
     clearMemory();
     reload();
+  }
+
+  function handleExport() {
+    const blob = new Blob([JSON.stringify(getMemory(), null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "versailles-memoire.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImport(file: File) {
+    try {
+      const data = JSON.parse(await file.text());
+      if (Array.isArray(data)) {
+        replaceMemory(data as MemoryEvent[]);
+        reload();
+      }
+    } catch {
+      // fichier invalide : on ignore silencieusement
+    }
   }
 
   return (
@@ -80,15 +104,33 @@ export default function MemoryPage() {
           <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
             Journal ({events.length})
           </h2>
-          {events.length > 0 && (
+          <div className="flex items-center gap-4 text-sm">
             <button
               type="button"
-              onClick={handleClear}
-              className="text-sm text-red-600 hover:underline dark:text-red-400"
+              onClick={handleExport}
+              className="text-indigo-600 hover:underline dark:text-indigo-400"
             >
-              Tout effacer
+              💾 Sauvegarder
             </button>
-          )}
+            <label className="cursor-pointer text-indigo-600 hover:underline dark:text-indigo-400">
+              ♻️ Restaurer
+              <input
+                type="file"
+                accept="application/json"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleImport(e.target.files[0])}
+              />
+            </label>
+            {events.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="text-red-600 hover:underline dark:text-red-400"
+              >
+                Effacer
+              </button>
+            )}
+          </div>
         </div>
 
         {events.length === 0 ? (

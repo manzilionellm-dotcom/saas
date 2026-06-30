@@ -349,6 +349,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "keystone",
+    name: "Keystone",
+    tagline: "Même si tout échoue, votre SaaS reste debout",
+    description:
+      "Le stabilisateur. Keystone est le filet de sécurité qui empêche tout effondrement : aucune page ne plante (jamais d'écran blanc), les erreurs sont contenues et l'application redémarre toute seule. Vos données critiques — comme la mémoire de Versailles — sont sauvegardées et restaurables, pour survivre à un navigateur effacé ou un changement d'appareil. La fondation sur laquelle tout le reste tient.",
+    category: "Sécurité",
+    icon: "🛟",
+    monthlyPrice: 0,
+    features: [
+      "Filet de sécurité global (jamais d'écran blanc)",
+      "Reprise automatique après erreur",
+      "Mode dégradé : l'app tourne même si une IA ou une API tombe",
+      "Sauvegarde & restauration des données (mémoire incluse)",
+      "Pages d'erreur et 404 bienveillantes",
+      "Inclus gratuitement — la base de tout",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
