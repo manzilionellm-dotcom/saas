@@ -89,9 +89,17 @@ export default function VersaillesPage() {
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
             👑 Versailles — poste de commandement
           </h1>
-          <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-            Vérification auto dans {mm}:{ss}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/audit"
+              className="rounded-full bg-amber-600 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+            >
+              🔎 Analyser une URL
+            </Link>
+            <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              Vérification auto dans {mm}:{ss}
+            </div>
           </div>
         </div>
 
