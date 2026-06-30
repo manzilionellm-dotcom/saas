@@ -324,6 +324,26 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "silkroute",
+    name: "SilkRoute",
+    tagline: "Le meilleur prix depuis la Chine, livré chez vous",
+    description:
+      "Montrez un produit ou collez un lien : SilkRoute cherche le meilleur prix sur les grands sites chinois (AliExpress, Alibaba, 1688, Taobao, DHgate, Temu, Banggood, Made-in-China…), compare la qualité (notes & vendeurs vérifiés), puis organise l'expédition et le dédouanement jusqu'en Suède. Objectif : le moins cher possible, en haute qualité, en toute confiance.",
+    category: "E-commerce",
+    icon: "🐉",
+    monthlyPrice: 49,
+    features: [
+      "Recherche du meilleur prix à partir d'un lien ou d'une photo",
+      "Comparaison multi-sites (AliExpress, Alibaba, 1688, Taobao, DHgate, Temu, Banggood…)",
+      "Filtre qualité : avis, notes et vendeurs vérifiés",
+      "Calcul des frais de port, délais, douane & TVA vers la Suède",
+      "Consolidation de colis (agent d'expédition)",
+      "Suivi de commande de bout en bout",
+      "Détection des contrefaçons (achat de confiance)",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
