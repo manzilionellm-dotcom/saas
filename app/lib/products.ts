@@ -185,6 +185,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "universal-knowledge-engine",
+    name: "Universal Knowledge Engine",
+    tagline: "Toute la connaissance, vérifiée et sourcée",
+    description:
+      "Recherche dans des milliers de sources, compare les informations entre elles et produit des rapports structurés accompagnés de leurs références, pour des réponses fiables et vérifiables.",
+    category: "Intelligence",
+    icon: "📚",
+    monthlyPrice: 119,
+    features: [
+      "Recherche dans des milliers de sources",
+      "Comparaison croisée des informations",
+      "Rapports structurés",
+      "Références & citations",
+      "Détection des contradictions",
+      "Export PDF & partage",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
