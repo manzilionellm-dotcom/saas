@@ -204,6 +204,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "ai-os-smartphones",
+    name: "AI OS for Smartphones",
+    tagline: "L'IA qui pilote votre téléphone à votre place",
+    description:
+      "Une surcouche pour smartphone qui orchestre plusieurs IA pour vous assister dans vos tâches quotidiennes : messages, agenda, achats, déplacements et applications, le tout coordonné par un assistant unique.",
+    category: "Intelligence",
+    icon: "📱",
+    monthlyPrice: 79,
+    features: [
+      "Surcouche multi-IA",
+      "Orchestration des applications",
+      "Assistance aux tâches quotidiennes",
+      "Commandes en langage naturel",
+      "Automatisations contextuelles",
+      "Compatible iOS & Android",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
