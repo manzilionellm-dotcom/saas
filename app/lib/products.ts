@@ -1,0 +1,352 @@
+export type Product = {
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  category: string;
+  icon: string;
+  monthlyPrice: number;
+  features: string[];
+};
+
+// 30 produits SaaS génériques (catalogue de démonstration)
+export const products: Product[] = [
+  {
+    slug: "flowcrm",
+    name: "FlowCRM",
+    tagline: "Pipeline de ventes sans friction",
+    description:
+      "Gérez prospects, contacts et opportunités dans un pipeline visuel. Automatisez les relances et suivez chaque deal jusqu'à la signature.",
+    category: "Ventes",
+    icon: "📈",
+    monthlyPrice: 29,
+    features: ["Pipeline glisser-déposer", "Relances automatiques", "Rapports de ventes", "Intégration e-mail"],
+  },
+  {
+    slug: "pulse-analytics",
+    name: "Pulse Analytics",
+    tagline: "Vos métriques en temps réel",
+    description:
+      "Tableaux de bord temps réel pour suivre trafic, conversions et rétention. Connectez vos sources de données en quelques clics.",
+    category: "Analytique",
+    icon: "📊",
+    monthlyPrice: 49,
+    features: ["Tableaux de bord temps réel", "Entonnoirs de conversion", "Alertes intelligentes", "Export CSV/API"],
+  },
+  {
+    slug: "deskly",
+    name: "Deskly",
+    tagline: "Support client centralisé",
+    description:
+      "Centralisez tickets, e-mails et chat dans une seule boîte de réception partagée. Répondez plus vite avec des modèles et l'IA.",
+    category: "Support",
+    icon: "🎧",
+    monthlyPrice: 25,
+    features: ["Boîte partagée", "Réponses suggérées par IA", "Base de connaissances", "SLA & priorités"],
+  },
+  {
+    slug: "billwise",
+    name: "BillWise",
+    tagline: "Facturation et abonnements",
+    description:
+      "Automatisez la facturation récurrente, gérez les abonnements et relancez les paiements échoués sans effort.",
+    category: "Finance",
+    icon: "💳",
+    monthlyPrice: 39,
+    features: ["Facturation récurrente", "Relance des impayés", "Multi-devises", "Conformité TVA"],
+  },
+  {
+    slug: "teamsync",
+    name: "TeamSync",
+    tagline: "Collaboration d'équipe",
+    description:
+      "Messagerie, canaux et appels vidéo réunis pour garder votre équipe alignée où qu'elle soit.",
+    category: "Productivité",
+    icon: "💬",
+    monthlyPrice: 19,
+    features: ["Canaux & messages", "Appels vidéo HD", "Partage de fichiers", "Fil de discussions"],
+  },
+  {
+    slug: "deploybot",
+    name: "DeployBot",
+    tagline: "Déploiement continu simplifié",
+    description:
+      "Déployez vos applications en un clic avec des pipelines CI/CD préconfigurés et des retours arrière instantanés.",
+    category: "Développement",
+    icon: "🚀",
+    monthlyPrice: 59,
+    features: ["Pipelines CI/CD", "Retour arrière en 1 clic", "Environnements de préversion", "Journaux en direct"],
+  },
+  {
+    slug: "mailforge",
+    name: "MailForge",
+    tagline: "Campagnes e-mail performantes",
+    description:
+      "Créez, envoyez et mesurez des campagnes e-mail avec un éditeur visuel et l'automatisation par scénarios.",
+    category: "Marketing",
+    icon: "✉️",
+    monthlyPrice: 35,
+    features: ["Éditeur glisser-déposer", "Scénarios d'automatisation", "Tests A/B", "Segmentation avancée"],
+  },
+  {
+    slug: "taskhive",
+    name: "TaskHive",
+    tagline: "Gestion de projets agile",
+    description:
+      "Planifiez, suivez et livrez vos projets avec des tableaux Kanban, des sprints et des diagrammes de Gantt.",
+    category: "Productivité",
+    icon: "🗂️",
+    monthlyPrice: 22,
+    features: ["Tableaux Kanban", "Sprints & backlog", "Diagramme de Gantt", "Suivi du temps"],
+  },
+  {
+    slug: "securevault",
+    name: "SecureVault",
+    tagline: "Gestion des mots de passe d'équipe",
+    description:
+      "Stockez et partagez vos identifiants en toute sécurité avec un chiffrement de bout en bout et des contrôles d'accès.",
+    category: "Sécurité",
+    icon: "🔐",
+    monthlyPrice: 15,
+    features: ["Chiffrement bout en bout", "Partage sécurisé", "Audit d'accès", "Authentification 2FA"],
+  },
+  {
+    slug: "shipfast",
+    name: "ShipFast",
+    tagline: "Logistique e-commerce",
+    description:
+      "Synchronisez vos commandes, imprimez vos étiquettes et suivez chaque colis depuis un tableau de bord unique.",
+    category: "E-commerce",
+    icon: "📦",
+    monthlyPrice: 45,
+    features: ["Étiquettes d'expédition", "Suivi multi-transporteurs", "Gestion des retours", "Synchro boutiques"],
+  },
+  {
+    slug: "insightdb",
+    name: "InsightDB",
+    tagline: "Base de données managée",
+    description:
+      "Base de données PostgreSQL managée avec sauvegardes automatiques, mise à l'échelle et haute disponibilité.",
+    category: "Développement",
+    icon: "🗄️",
+    monthlyPrice: 69,
+    features: ["Sauvegardes automatiques", "Mise à l'échelle auto", "Réplicas en lecture", "Surveillance 24/7"],
+  },
+  {
+    slug: "brandkit",
+    name: "BrandKit",
+    tagline: "Gestion d'identité de marque",
+    description:
+      "Centralisez logos, couleurs et chartes graphiques pour garder une marque cohérente sur tous vos supports.",
+    category: "Design",
+    icon: "🎨",
+    monthlyPrice: 18,
+    features: ["Bibliothèque d'actifs", "Chartes partagées", "Versionnage", "Accès invités"],
+  },
+  {
+    slug: "callcenter-pro",
+    name: "CallCenter Pro",
+    tagline: "Téléphonie cloud",
+    description:
+      "Standard téléphonique cloud avec routage intelligent, enregistrement des appels et statistiques détaillées.",
+    category: "Support",
+    icon: "📞",
+    monthlyPrice: 42,
+    features: ["Routage intelligent", "Enregistrement d'appels", "Numéros internationaux", "Statistiques d'appels"],
+  },
+  {
+    slug: "docuflow",
+    name: "DocuFlow",
+    tagline: "Signature électronique",
+    description:
+      "Envoyez, signez et archivez vos documents légalement avec une signature électronique conforme.",
+    category: "Finance",
+    icon: "✍️",
+    monthlyPrice: 27,
+    features: ["Signature conforme eIDAS", "Modèles réutilisables", "Suivi en temps réel", "Archivage sécurisé"],
+  },
+  {
+    slug: "stockpilot",
+    name: "StockPilot",
+    tagline: "Gestion des stocks",
+    description:
+      "Suivez vos stocks en temps réel, anticipez les ruptures et automatisez vos commandes fournisseurs.",
+    category: "E-commerce",
+    icon: "📋",
+    monthlyPrice: 38,
+    features: ["Stock temps réel", "Alertes de rupture", "Commandes auto", "Multi-entrepôts"],
+  },
+  {
+    slug: "feedbackloop",
+    name: "FeedbackLoop",
+    tagline: "Enquêtes et sondages",
+    description:
+      "Recueillez l'avis de vos clients avec des enquêtes ciblées, des NPS et des analyses de sentiment.",
+    category: "Marketing",
+    icon: "⭐",
+    monthlyPrice: 21,
+    features: ["Enquêtes NPS", "Sondages intégrés", "Analyse de sentiment", "Rapports partageables"],
+  },
+  {
+    slug: "codereview-ai",
+    name: "CodeReview AI",
+    tagline: "Revue de code assistée par IA",
+    description:
+      "Détectez bugs et failles de sécurité avant la fusion grâce à des revues de code automatisées par IA.",
+    category: "Développement",
+    icon: "🤖",
+    monthlyPrice: 55,
+    features: ["Analyse de PR", "Détection de failles", "Suggestions de refactor", "Intégration Git"],
+  },
+  {
+    slug: "timekeeper",
+    name: "TimeKeeper",
+    tagline: "Suivi du temps et paie",
+    description:
+      "Pointage, feuilles de temps et calcul de paie réunis pour simplifier la gestion de vos équipes.",
+    category: "RH",
+    icon: "⏱️",
+    monthlyPrice: 16,
+    features: ["Pointage mobile", "Feuilles de temps", "Calcul de paie", "Gestion des congés"],
+  },
+  {
+    slug: "hireflow",
+    name: "HireFlow",
+    tagline: "Recrutement simplifié",
+    description:
+      "Gérez vos offres, candidatures et entretiens dans un pipeline de recrutement collaboratif.",
+    category: "RH",
+    icon: "🧑‍💼",
+    monthlyPrice: 33,
+    features: ["Pipeline de candidats", "Pages carrière", "Planification d'entretiens", "Notes collaboratives"],
+  },
+  {
+    slug: "cloudstore",
+    name: "CloudStore",
+    tagline: "Stockage de fichiers sécurisé",
+    description:
+      "Stockez, synchronisez et partagez vos fichiers d'entreprise avec un contrôle d'accès granulaire.",
+    category: "Productivité",
+    icon: "☁️",
+    monthlyPrice: 12,
+    features: ["Synchro multi-appareils", "Partage par lien", "Contrôle d'accès", "Historique des versions"],
+  },
+  {
+    slug: "adboost",
+    name: "AdBoost",
+    tagline: "Gestion de campagnes publicitaires",
+    description:
+      "Pilotez vos campagnes Google, Meta et LinkedIn depuis une interface unique avec optimisation automatique.",
+    category: "Marketing",
+    icon: "🎯",
+    monthlyPrice: 64,
+    features: ["Multi-plateformes", "Optimisation auto", "Rapports unifiés", "Suivi des conversions"],
+  },
+  {
+    slug: "bookme",
+    name: "BookMe",
+    tagline: "Prise de rendez-vous en ligne",
+    description:
+      "Laissez vos clients réserver en ligne avec synchronisation de calendrier et rappels automatiques.",
+    category: "Productivité",
+    icon: "📅",
+    monthlyPrice: 14,
+    features: ["Page de réservation", "Synchro calendrier", "Rappels SMS/e-mail", "Paiements en ligne"],
+  },
+  {
+    slug: "sentryguard",
+    name: "SentryGuard",
+    tagline: "Surveillance et alertes",
+    description:
+      "Surveillez la disponibilité et les performances de vos services avec des alertes en temps réel.",
+    category: "Sécurité",
+    icon: "🛡️",
+    monthlyPrice: 31,
+    features: ["Surveillance uptime", "Alertes multicanal", "Pages de statut", "Historique d'incidents"],
+  },
+  {
+    slug: "learnhub",
+    name: "LearnHub",
+    tagline: "Plateforme de formation",
+    description:
+      "Créez et diffusez des formations en ligne avec suivi de progression et certificats automatiques.",
+    category: "RH",
+    icon: "🎓",
+    monthlyPrice: 28,
+    features: ["Création de cours", "Suivi de progression", "Quiz & certificats", "Espace apprenant"],
+  },
+  {
+    slug: "chatwidget",
+    name: "ChatWidget",
+    tagline: "Chat en direct pour sites web",
+    description:
+      "Ajoutez un chat en direct à votre site et convertissez vos visiteurs avec des réponses instantanées.",
+    category: "Support",
+    icon: "🗨️",
+    monthlyPrice: 17,
+    features: ["Widget personnalisable", "Chatbot IA", "Déclencheurs automatiques", "Historique de conversations"],
+  },
+  {
+    slug: "expensly",
+    name: "Expensly",
+    tagline: "Gestion des notes de frais",
+    description:
+      "Numérisez vos reçus, automatisez les validations et remboursez vos équipes plus vite.",
+    category: "Finance",
+    icon: "🧾",
+    monthlyPrice: 20,
+    features: ["Scan de reçus", "Flux d'approbation", "Cartes virtuelles", "Export comptable"],
+  },
+  {
+    slug: "socialpilot",
+    name: "SocialPilot",
+    tagline: "Gestion des réseaux sociaux",
+    description:
+      "Planifiez, publiez et analysez vos publications sur tous vos réseaux depuis un calendrier unique.",
+    category: "Marketing",
+    icon: "📱",
+    monthlyPrice: 26,
+    features: ["Calendrier de publication", "File d'attente automatique", "Analytique sociale", "Gestion multi-comptes"],
+  },
+  {
+    slug: "formcraft",
+    name: "FormCraft",
+    tagline: "Formulaires et collecte de données",
+    description:
+      "Construisez des formulaires intelligents avec logique conditionnelle et intégrations en quelques minutes.",
+    category: "Productivité",
+    icon: "📝",
+    monthlyPrice: 13,
+    features: ["Éditeur visuel", "Logique conditionnelle", "Intégrations Zapier", "Notifications instantanées"],
+  },
+  {
+    slug: "datapipe",
+    name: "DataPipe",
+    tagline: "ETL et intégration de données",
+    description:
+      "Connectez vos sources de données et automatisez vos flux ETL vers votre entrepôt en toute fiabilité.",
+    category: "Analytique",
+    icon: "🔗",
+    monthlyPrice: 72,
+    features: ["200+ connecteurs", "Synchro planifiée", "Transformations SQL", "Surveillance des flux"],
+  },
+  {
+    slug: "voicescribe",
+    name: "VoiceScribe",
+    tagline: "Transcription et notes de réunion",
+    description:
+      "Transcrivez automatiquement vos réunions, générez des résumés et partagez les actions à mener.",
+    category: "Productivité",
+    icon: "🎙️",
+    monthlyPrice: 24,
+    features: ["Transcription IA", "Résumés automatiques", "Détection des actions", "Recherche dans l'audio"],
+  },
+];
+
+export const categories: string[] = Array.from(
+  new Set(products.map((p) => p.category)),
+).sort();
+
+export function getProduct(slug: string): Product | undefined {
+  return products.find((p) => p.slug === slug);
+}
