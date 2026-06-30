@@ -17,7 +17,13 @@ export default function Home() {
             Ventes, marketing, support, développement et plus encore. Choisissez
             les outils dont vous avez besoin, payez à l&apos;usage.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/meeting"
+              className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              🗣️ Réunion d&apos;équipe IA
+            </Link>
             <Link
               href="/tools/m3u"
               className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
