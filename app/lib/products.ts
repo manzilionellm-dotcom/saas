@@ -8,6 +8,7 @@ export type Product = {
   monthlyPrice: number;
   features: string[];
   featured?: boolean;
+  comingSoon?: boolean;
 };
 
 // Catalogue de produits SaaS (produits phares en tête)
@@ -572,6 +573,102 @@ export const products: Product[] = [
     icon: "🎙️",
     monthlyPrice: 24,
     features: ["Transcription IA", "Résumés automatiques", "Détection des actions", "Recherche dans l'audio"],
+  },
+  // --- Bientôt disponibles (affichés en grisé) ---
+  {
+    slug: "ai-legal-guardian",
+    name: "AI Legal Guardian",
+    tagline: "Vos contrats et votre conformité sous surveillance",
+    description:
+      "Analyse vos contrats, détecte les clauses à risque et surveille en continu votre conformité réglementaire pour vous alerter avant le moindre problème.",
+    category: "Juridique",
+    icon: "⚖️",
+    monthlyPrice: 89,
+    features: [
+      "Analyse de contrats",
+      "Détection de clauses à risque",
+      "Veille réglementaire",
+      "Alertes de conformité",
+      "Modèles juridiques",
+    ],
+    featured: true,
+    comingSoon: true,
+  },
+  {
+    slug: "ai-content-empire",
+    name: "AI Content Empire",
+    tagline: "Une machine à contenu SEO qui ne dort jamais",
+    description:
+      "Produit articles, pages et publications optimisés pour le référencement à grande échelle, en respectant votre ligne éditoriale et votre stratégie de mots-clés.",
+    category: "Marketing",
+    icon: "📰",
+    monthlyPrice: 79,
+    features: [
+      "Génération d'articles SEO",
+      "Stratégie de mots-clés",
+      "Calendrier éditorial",
+      "Publication multi-sites",
+      "Optimisation continue",
+    ],
+    featured: true,
+    comingSoon: true,
+  },
+  {
+    slug: "ai-customer-magnet",
+    name: "AI Customer Magnet",
+    tagline: "Attirez et qualifiez vos clients automatiquement",
+    description:
+      "Identifie vos clients idéaux, génère des prospects qualifiés et engage la conversation à votre place pour remplir votre pipeline en continu.",
+    category: "Ventes",
+    icon: "🧲",
+    monthlyPrice: 99,
+    features: [
+      "Identification de clients idéaux",
+      "Génération de prospects",
+      "Qualification automatique",
+      "Prise de contact personnalisée",
+      "Synchronisation CRM",
+    ],
+    featured: true,
+    comingSoon: true,
+  },
+  {
+    slug: "ai-market-expander",
+    name: "AI Market Expander",
+    tagline: "Lancez-vous sur de nouveaux marchés en un clic",
+    description:
+      "Analyse de nouveaux marchés, traduit et adapte votre offre culturellement, et bâtit un plan d'entrée local pour accélérer votre expansion internationale.",
+    category: "Intelligence",
+    icon: "🌍",
+    monthlyPrice: 129,
+    features: [
+      "Analyse de marchés cibles",
+      "Localisation & traduction",
+      "Adaptation culturelle",
+      "Plan d'entrée sur le marché",
+      "Étude de la concurrence locale",
+    ],
+    featured: true,
+    comingSoon: true,
+  },
+  {
+    slug: "ai-competitor-tracker",
+    name: "AI Competitor Tracker",
+    tagline: "Gardez toujours une longueur d'avance",
+    description:
+      "Surveille en temps réel les prix, les fonctionnalités, les campagnes et les recrutements de vos concurrents, et vous alerte au moindre mouvement stratégique.",
+    category: "Intelligence",
+    icon: "🛰️",
+    monthlyPrice: 109,
+    features: [
+      "Surveillance des prix",
+      "Suivi des fonctionnalités",
+      "Veille publicitaire",
+      "Suivi des recrutements",
+      "Alertes de mouvements stratégiques",
+    ],
+    featured: true,
+    comingSoon: true,
   },
 ];
 
