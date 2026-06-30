@@ -108,6 +108,25 @@ export const products: Product[] = [
     featured: true,
   },
   {
+    slug: "future-trends-engine",
+    name: "Future Trends Engine",
+    tagline: "Repérez les secteurs en croissance avant tout le monde",
+    description:
+      "Analyse les brevets, les publications scientifiques, les offres d'emploi et les investissements pour détecter les secteurs en croissance avant qu'ils ne deviennent populaires. Suit aussi les tendances aux États-Unis et vous livre un rapport chaque jour.",
+    category: "Intelligence",
+    icon: "🔮",
+    monthlyPrice: 139,
+    features: [
+      "Analyse des brevets",
+      "Publications scientifiques",
+      "Offres d'emploi & investissements",
+      "Détection précoce des secteurs en croissance",
+      "Tendances USA suivies en continu",
+      "Rapport quotidien automatique",
+    ],
+    featured: true,
+  },
+  {
     slug: "flowcrm",
     name: "FlowCRM",
     tagline: "Pipeline de ventes sans friction",
