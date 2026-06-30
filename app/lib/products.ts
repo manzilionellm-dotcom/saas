@@ -7,10 +7,30 @@ export type Product = {
   icon: string;
   monthlyPrice: number;
   features: string[];
+  featured?: boolean;
 };
 
-// 30 produits SaaS génériques (catalogue de démonstration)
+// Catalogue de produits SaaS (Internet Brain en produit phare)
 export const products: Product[] = [
+  {
+    slug: "internet-brain",
+    name: "Internet Brain",
+    tagline: "L'IA qui surveille Internet pour vous, 24h/24",
+    description:
+      "Une intelligence artificielle qui veille en continu sur le web et détecte pour vous : nouveaux business, concurrents, tendances, fournisseurs, investisseurs et clients. Puis elle propose directement les actions à mener.",
+    category: "Intelligence",
+    icon: "🧠",
+    monthlyPrice: 99,
+    features: [
+      "Veille du web 24h/24",
+      "Détection de nouveaux business & tendances",
+      "Surveillance des concurrents",
+      "Repérage de fournisseurs, investisseurs & clients",
+      "Recommandations d'actions concrètes",
+      "Alertes en temps réel",
+    ],
+    featured: true,
+  },
   {
     slug: "flowcrm",
     name: "FlowCRM",
