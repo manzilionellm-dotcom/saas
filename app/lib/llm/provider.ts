@@ -6,6 +6,14 @@ export type LLMRequest = {
   prompt: string;
   maxTokens?: number;
   locale?: string;
+  // Métadonnées optionnelles : Claude les ignore (il utilise system+prompt),
+  // le provider local s'en sert pour produire un contenu réaliste sans clé.
+  meta?: {
+    kind?: string;
+    platform?: string;
+    businessName?: string;
+    brandVoice?: string;
+  };
 };
 
 export type LLMResponse = {

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { repo } from "../../../lib/db/repo";
 import BusinessForm from "../../BusinessForm";
 import BusinessActions from "../../BusinessActions";
+import GenerationPanel from "../../GenerationPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,14 @@ export default async function BusinessDetailPage({ params }: { params: Promise<{
 
         <section className="mt-10">
           <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Générations ({generations.length})
+            Content Factory
+          </h2>
+          <GenerationPanel businessId={business.id} locales={[business.locale, ...business.additionalLocales]} />
+        </section>
+
+        <section className="mt-10">
+          <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            Historique ({generations.length})
           </h2>
           {generations.length === 0 ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
