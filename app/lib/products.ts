@@ -574,6 +574,24 @@ export const products: Product[] = [
     monthlyPrice: 24,
     features: ["Transcription IA", "Résumés automatiques", "Détection des actions", "Recherche dans l'audio"],
   },
+  {
+    slug: "streamcast-tv",
+    name: "StreamCast TV",
+    tagline: "Lancez votre chaîne IPTV/OTT légale en quelques minutes",
+    description:
+      "Plateforme IPTV/OTT clé en main pour diffuser votre propre contenu ou du contenu dont vous détenez les droits : chaînes d'entreprise, hôtels, écoles, télés locales ou créateurs. Gestion des abonnements, des droits et de la diffusion multi-écrans, dans le respect de la législation.",
+    category: "Vidéo",
+    icon: "📺",
+    monthlyPrice: 79,
+    features: [
+      "Diffusion de votre contenu sous licence",
+      "Applications multi-écrans (TV, mobile, web)",
+      "Gestion des abonnements & paiements",
+      "Protection des contenus (DRM)",
+      "Gestion des droits & géo-restrictions",
+      "Statistiques d'audience",
+    ],
+  },
   // --- Bientôt disponibles (affichés en grisé) ---
   {
     slug: "ai-legal-guardian",
