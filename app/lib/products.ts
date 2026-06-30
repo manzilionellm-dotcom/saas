@@ -10,8 +10,29 @@ export type Product = {
   featured?: boolean;
 };
 
-// Catalogue de produits SaaS (Internet Brain en produit phare)
+// Catalogue de produits SaaS (produits phares en tête)
 export const products: Product[] = [
+  {
+    slug: "ai-company",
+    name: "AI Company",
+    tagline: "D'une idée à une entreprise complète, automatiquement",
+    description:
+      "Transformez une simple idée en entreprise entière. L'IA crée et orchestre tout : site web, application, comptabilité, publicités, support client, ventes, recrutement et rapports. Pensé pour chaque nouvel entrepreneur.",
+    category: "Intelligence",
+    icon: "🚀",
+    monthlyPrice: 199,
+    features: [
+      "Site web généré",
+      "Application sur mesure",
+      "Comptabilité automatisée",
+      "Campagnes publicitaires",
+      "Support client",
+      "Ventes & prospection",
+      "Recrutement",
+      "Rapports & pilotage",
+    ],
+    featured: true,
+  },
   {
     slug: "internet-brain",
     name: "Internet Brain",
