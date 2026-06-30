@@ -592,6 +592,26 @@ export const products: Product[] = [
       "Statistiques d'audience",
     ],
   },
+  {
+    slug: "streamcast-server",
+    name: "StreamCast Server",
+    tagline: "Votre serveur de streaming IPTV/OTT managé",
+    description:
+      "Serveur de streaming managé pour diffuser votre propre contenu ou du contenu sous licence : ingestion des sources, transcodage automatique, sortie HLS/DASH, protection DRM et mise à l'échelle automatique. Vous gardez le contrôle de vos droits et de vos abonnés.",
+    category: "Vidéo",
+    icon: "🖥️",
+    monthlyPrice: 99,
+    features: [
+      "Ingestion RTMP/SRT",
+      "Transcodage adaptatif (multi-qualités)",
+      "Sortie HLS & DASH",
+      "Protection DRM & jetons d'accès",
+      "Mise à l'échelle automatique",
+      "Génération de playlists M3U/M3U8",
+      "Statistiques de diffusion",
+    ],
+    featured: true,
+  },
   // --- Bientôt disponibles (affichés en grisé) ---
   {
     slug: "ai-legal-guardian",
