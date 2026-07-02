@@ -63,6 +63,27 @@ class StreamsStore {
     return [...db.channels];
   }
 
+  async count(): Promise<number> {
+    const db = await this.load();
+    return db.channels.length;
+  }
+
+  // Aperçu léger pour l'UI (évite d'envoyer 15 000 objets au navigateur).
+  async preview(limit: number): Promise<Channel[]> {
+    const db = await this.load();
+    return db.channels.slice(0, limit);
+  }
+
+  // Provenances (playlist/compte) avec leur nombre de chaînes, pour la gestion en bloc.
+  async origins(): Promise<{ origin: string; count: number }[]> {
+    const db = await this.load();
+    const map = new Map<string, number>();
+    for (const c of db.channels) {
+      if (c.origin) map.set(c.origin, (map.get(c.origin) ?? 0) + 1);
+    }
+    return [...map.entries()].map(([origin, count]) => ({ origin, count }));
+  }
+
   async get(id: string): Promise<Channel | null> {
     const db = await this.load();
     return db.channels.find((c) => c.id === id) ?? null;

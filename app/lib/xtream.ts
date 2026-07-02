@@ -17,7 +17,7 @@ export type XtreamChannel = {
 
 const TIMEOUT_MS = 15000;
 // Garde-fou : certains comptes exposent des dizaines de milliers de chaînes.
-export const XTREAM_MAX_CHANNELS = 5000;
+export const XTREAM_MAX_CHANNELS = 30000;
 
 export function normalizeServer(raw: string): string {
   let s = raw.trim().replace(/\/+$/, "");

@@ -4,23 +4,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Channel } from "../lib/db/streams-store";
 
+type Props = {
+  total: number;
+  channels: Channel[]; // aperçu (limité côté serveur)
+  origins: { origin: string; count: number }[];
+};
+
 const SOURCE_LABEL: Record<Channel["source"], string> = {
   direct: "directe",
   m3u: "M3U",
   xtream: "Xtream",
 };
 
-export default function ChannelList({ initialChannels }: { initialChannels: Channel[] }) {
+export default function ChannelList({ total, channels, origins }: Props) {
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const channels = initialChannels;
-
-  // Regroupe par provenance (playlist/compte) pour permettre la suppression en bloc.
-  const origins = new Map<string, number>();
-  for (const c of channels) {
-    if (c.origin) origins.set(c.origin, (origins.get(c.origin) ?? 0) + 1);
-  }
 
   async function remove(query: string, busyKey: string) {
     setError(null);
@@ -41,9 +40,9 @@ export default function ChannelList({ initialChannels }: { initialChannels: Chan
     <div>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          Mes chaînes ({channels.length})
+          Mes chaînes ({total.toLocaleString("fr-FR")})
         </h2>
-        {channels.length > 0 && (
+        {total > 0 && (
           // Cible = fichier M3U (route handler), pas une page : <Link> ne convient pas.
           // eslint-disable-next-line @next/next/no-html-link-for-pages
           <a
@@ -65,9 +64,9 @@ export default function ChannelList({ initialChannels }: { initialChannels: Chan
         </p>
       )}
 
-      {origins.size > 0 && (
+      {origins.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {[...origins.entries()].map(([origin, count]) => (
+          {origins.map(({ origin, count }) => (
             <button
               key={origin}
               type="button"
@@ -76,20 +75,20 @@ export default function ChannelList({ initialChannels }: { initialChannels: Chan
               title={`Supprimer les ${count} chaîne(s) importées depuis ${origin}`}
               className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 transition-colors hover:bg-red-100 hover:text-red-700 disabled:opacity-60 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
             >
-              ✕ {origin} ({count})
+              ✕ {origin} ({count.toLocaleString("fr-FR")})
             </button>
           ))}
         </div>
       )}
 
-      {channels.length === 0 ? (
+      {total === 0 ? (
         <p className="mt-6 rounded-2xl border border-dashed border-zinc-300 p-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-          Aucune chaîne pour l&apos;instant. Importez une playlist M3U, un compte Xtream Codes ou
-          ajoutez une chaîne directe ci-dessus.
+          Aucune chaîne pour l&apos;instant. Importez une ou plusieurs playlists M3U, un compte
+          Xtream Codes ou ajoutez une chaîne directe ci-dessus.
         </p>
       ) : (
         <ul className="mt-4 divide-y divide-zinc-200 rounded-2xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
-          {channels.slice(0, 200).map((c) => (
+          {channels.map((c) => (
             <li key={c.id} className="flex items-center gap-3 px-4 py-2.5">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -116,9 +115,10 @@ export default function ChannelList({ initialChannels }: { initialChannels: Chan
               </button>
             </li>
           ))}
-          {channels.length > 200 && (
+          {total > channels.length && (
             <li className="px-4 py-2.5 text-xs text-zinc-500 dark:text-zinc-400">
-              … et {channels.length - 200} autres (toutes présentes dans /playlist/all).
+              … et {(total - channels.length).toLocaleString("fr-FR")} autres (toutes présentes dans
+              /playlist/all). Utilisez les étiquettes ci-dessus pour gérer par playlist.
             </li>
           )}
         </ul>

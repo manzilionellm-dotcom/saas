@@ -50,7 +50,11 @@ export default async function PanelPage() {
             </section>
 
             <section className="mt-10">
-              <ChannelList initialChannels={await streamsStore.list()} />
+              <ChannelList
+                total={await streamsStore.count()}
+                channels={await streamsStore.preview(300)}
+                origins={await streamsStore.origins()}
+              />
             </section>
           </>
         )}

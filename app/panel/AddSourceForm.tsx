@@ -47,9 +47,18 @@ export default function AddSourceForm() {
       if (tab === "m3u") {
         const data = await post("/api/panel/import/m3u", {
           url: m3uUrl,
-          content: m3uUrl ? "" : m3uContent,
+          content: m3uUrl.trim() ? "" : m3uContent,
         });
-        setMsg(`${data.imported} chaîne(s) importée(s).${data.truncated ? " (liste tronquée)" : ""}`);
+        const sources = Array.isArray(data.sources) ? data.sources : [];
+        const okCount = sources.filter((s: { imported: number }) => s.imported > 0).length;
+        const failed = sources.filter((s: { error?: string }) => s.error).length;
+        setMsg(
+          `${Number(data.imported).toLocaleString("fr-FR")} chaîne(s) importée(s)` +
+            (sources.length > 1 ? ` depuis ${okCount} playlist(s)` : "") +
+            (failed ? ` — ${failed} source(s) en échec` : "") +
+            (data.truncated ? " (plafond atteint)" : "") +
+            ".",
+        );
         setM3uUrl("");
         setM3uContent("");
       } else if (tab === "xtream") {
@@ -106,23 +115,26 @@ export default function AddSourceForm() {
         {tab === "m3u" && (
           <>
             <div>
-              <label className={label}>URL de la playlist (.m3u / .m3u8)</label>
-              <input
-                className={field}
+              <label className={label}>
+                URL(s) de playlist (.m3u / .m3u8) — une par ligne pour en importer plusieurs
+              </label>
+              <textarea
+                className={`${field} font-mono`}
+                rows={4}
                 value={m3uUrl}
                 onChange={(e) => setM3uUrl(e.target.value)}
-                placeholder="https://exemple.com/ma-playlist.m3u"
+                placeholder={"https://exemple.com/playlist-1.m3u\nhttps://exemple.com/playlist-2.m3u"}
               />
             </div>
             <div>
-              <label className={label}>… ou collez le contenu M3U</label>
+              <label className={label}>… ou collez le contenu d&apos;une playlist</label>
               <textarea
                 className={`${field} font-mono`}
                 rows={5}
                 value={m3uContent}
                 onChange={(e) => setM3uContent(e.target.value)}
                 placeholder={"#EXTM3U\n#EXTINF:-1,Ma chaîne\nhttps://…/flux.m3u8"}
-                disabled={!!m3uUrl}
+                disabled={!!m3uUrl.trim()}
               />
             </div>
           </>
