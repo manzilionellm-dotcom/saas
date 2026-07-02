@@ -1,5 +1,6 @@
 import { streamsStore } from "../../../lib/db/streams-store";
 import { isPanelAuthed, unauthorized } from "../../../lib/panel-auth";
+import { safeFetch } from "../../../lib/safe-fetch";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ type Health = { id: string; ok: boolean; status?: number; error?: string };
 async function probe(url: string): Promise<Omit<Health, "id">> {
   try {
     // GET + Range 0-0 : de nombreux serveurs HLS refusent HEAD mais acceptent un GET partiel.
-    const res = await fetch(url, {
+    const res = await safeFetch(url, {
       method: "GET",
       headers: { "User-Agent": "StreamCast/1.0", Range: "bytes=0-0" },
       signal: AbortSignal.timeout(TIMEOUT_MS),

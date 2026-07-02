@@ -1,6 +1,7 @@
 import { parseM3U } from "../../../../lib/m3u";
 import { streamsStore, type Channel } from "../../../../lib/db/streams-store";
 import { isPanelAuthed, unauthorized } from "../../../../lib/panel-auth";
+import { safeFetch } from "../../../../lib/safe-fetch";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ function toChannels(content: string, origin: string): Omit<Channel, "id" | "adde
 }
 
 async function fetchPlaylist(url: string): Promise<string> {
-  const res = await fetch(url, {
+  const res = await safeFetch(url, {
     signal: AbortSignal.timeout(TIMEOUT_MS),
     headers: { "User-Agent": "StreamCast/1.0" },
   });

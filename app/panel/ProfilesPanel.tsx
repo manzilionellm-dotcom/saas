@@ -126,7 +126,13 @@ export default function ProfilesPanel({ initialProfiles }: { initialProfiles: Pr
                     ({p.favorites.length > 0 ? `${p.favorites.length} favori(s)` : "tout le catalogue"})
                   </span>
                 </span>
-                <div className="flex shrink-0 gap-2">
+                <div className="flex shrink-0 items-center gap-2">
+                  <a
+                    href={`/watch/${p.token}`}
+                    className="rounded-lg px-2 py-1 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/40"
+                  >
+                    ▶ Regarder
+                  </a>
                   <button
                     type="button"
                     onClick={() => rotate(p.id)}

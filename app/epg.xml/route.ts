@@ -1,4 +1,5 @@
 import { streamsStore } from "../lib/db/streams-store";
+import { safeFetch } from "../lib/safe-fetch";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -29,7 +30,7 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(epgUrl, {
+    const res = await safeFetch(epgUrl, {
       headers: { "User-Agent": "StreamCast/1.0" },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
