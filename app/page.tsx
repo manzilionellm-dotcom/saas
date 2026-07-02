@@ -117,6 +117,12 @@ export default function Home() {
             >
               📺 Outil : cloneur de playlist M3U
             </Link>
+            <Link
+              href="/panel"
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
+            >
+              📡 StreamCast : panel des chaînes
+            </Link>
           </div>
         </div>
       </header>

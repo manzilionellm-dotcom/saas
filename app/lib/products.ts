@@ -14,6 +14,27 @@ export type Product = {
 // Catalogue de produits SaaS (produits phares en tête)
 export const products: Product[] = [
   {
+    slug: "streamcast",
+    name: "StreamCast Server",
+    tagline: "Votre serveur TV familial : vos chaînes, tous vos écrans, en même temps",
+    description:
+      "Transformez vos sources autorisées (playlists M3U, comptes Xtream Codes, flux directs) en un vrai bouquet TV familial. Un petit serveur restream vos chaînes à la demande : seules celles qu'on regarde consomment, donc un catalogue de 15 000 chaînes tient sur un VPS à 5 €/mois. Chaque profil de la famille zappe librement, en simultané, sans limite d'écrans et sans perte de qualité (aucun transcodage). Réservé aux flux que vous avez le droit d'utiliser.",
+    category: "Vidéo",
+    icon: "📡",
+    monthlyPrice: 9,
+    features: [
+      "Panel d'administration : import M3U, Xtream Codes ou chaîne directe",
+      "Playlist unique /playlist/all pour VLC, TiviMate & co",
+      "Restreaming à la demande (les chaînes non regardées ne consomment rien)",
+      "Profils illimités : chacun sa chaîne, en même temps",
+      "Qualité d'origine préservée (pas de transcodage)",
+      "Config serveur MediaMTX prête à déployer (VPS ~5 €/mois)",
+      "Protection par mot de passe (APP_PASSWORD)",
+      "Uniquement pour vos sources autorisées",
+    ],
+    featured: true,
+  },
+  {
     slug: "versailles",
     name: "Versailles",
     tagline: "Le chef qui rend tous vos sites incontournables sur Google et les IA",

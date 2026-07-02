@@ -1,0 +1,66 @@
+# =============================================================================
+# StreamCast Server — configuration MediaMTX (mode « à la demande »)
+# =============================================================================
+# Principe : chaque chaîne déclarée sous `paths:` n'est tirée depuis sa source
+# QUE lorsqu'un spectateur l'ouvre, et s'arrête quand le dernier s'en va.
+# C'est ce qui permet un très grand catalogue (15 000 chaînes) sur un petit
+# VPS : seules les chaînes regardées consomment de la bande passante.
+#
+# ⚠️ LÉGAL : ne déclarez ici que des flux que vous possédez ou que vous êtes
+# explicitement autorisé à rediffuser (ex. accord écrit avec la chaîne).
+#
+# Installation : voir README.md dans ce dossier.
+# =============================================================================
+
+# --- Journaux ----------------------------------------------------------------
+logLevel: info
+logDestinations: [stdout]
+
+# --- API de contrôle (locale uniquement, pour superviser le serveur) ---------
+api: yes
+apiAddress: 127.0.0.1:9997
+
+# --- Métriques (locales, optionnelles) ---------------------------------------
+metrics: no
+
+# --- Protocoles de sortie -----------------------------------------------------
+# HLS : le format que lisent VLC, TiviMate, navigateurs… C'est la sortie
+# principale de StreamCast. URL de lecture :
+#   http://<ip-du-vps>:8888/<chemin>/index.m3u8
+hls: yes
+hlsAddress: :8888
+hlsVariant: mpegts
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+hlsAllowOrigin: "*"
+
+# RTSP/RTMP/WebRTC/SRT : désactivés — inutiles pour un bouquet TV familial,
+# et moins de ports ouverts = moins de surface d'attaque.
+rtsp: no
+rtmp: no
+webrtc: no
+srt: no
+
+# --- Valeurs par défaut appliquées à tous les chemins -------------------------
+pathDefaults:
+  # À la demande : la source n'est lue que s'il y a au moins un spectateur.
+  sourceOnDemand: yes
+  # Délai avant de couper la source quand plus personne ne regarde.
+  sourceOnDemandCloseAfter: 10s
+  # Temps maximum pour démarrer la source quand quelqu'un zappe dessus.
+  sourceOnDemandStartTimeout: 15s
+
+# --- Chaînes ------------------------------------------------------------------
+# Deux façons de remplir cette section :
+#   1. Automatique : connectez-vous au panel de l'app, puis téléchargez
+#      /api/panel/export/mediamtx — le fichier contient tous vos `paths:`
+#      prêts à coller ici (remplacez la section ci-dessous).
+#   2. Manuelle : ajoutez chaque chaîne sur le modèle de l'exemple.
+paths:
+  # Exemple (à remplacer par vos chaînes autorisées) :
+  # rtnb:
+  #   source: "https://exemple.test/rtnb/live.m3u8"   # URL officielle autorisée
+  #   sourceOnDemand: yes
+
+  # Chemin de test sans source externe (mire de démarrage MediaMTX) :
+  # tous les autres chemins déclarés héritent de pathDefaults (on-demand).
