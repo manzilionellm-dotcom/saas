@@ -1,19 +1,59 @@
-import { getStream, isConfigured } from "../../lib/streams";
-import { buildM3U } from "../../lib/m3u";
+import { getStream, isConfigured, streams } from "../../lib/streams";
+import { buildM3U, type M3UEntry } from "../../lib/m3u";
+import { streamsStore, type Channel } from "../../lib/db/streams-store";
+
+export const dynamic = "force-dynamic";
 
 const M3U_HEADERS = {
   "Content-Type": "audio/x-mpegurl; charset=utf-8",
   "Content-Disposition": "inline",
 };
 
-// GET /playlist/<id>  →  sert un M3U mono-chaîne pour le flux demandé.
+function channelToEntry(c: Channel): M3UEntry {
+  const attrs: Record<string, string> = { "tvg-id": c.id, "tvg-name": c.name };
+  if (c.logo) attrs["tvg-logo"] = c.logo;
+  if (c.group) attrs["group-title"] = c.group;
+  return { name: c.name, url: c.url, duration: "-1", attrs };
+}
+
+// GET /playlist/all   →  M3U complet : chaînes du panel + flux configurés en dur.
+// GET /playlist/<id>  →  M3U mono-chaîne (chaîne du panel ou flux hérité).
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const stream = getStream(id);
 
+  if (id === "all") {
+    const channels = await streamsStore.list();
+    const entries = channels.map(channelToEntry);
+    for (const s of streams) {
+      if (!isConfigured(s)) continue;
+      const attrs: Record<string, string> = { "tvg-id": s.id, "tvg-name": s.name };
+      if (s.logo) attrs["tvg-logo"] = s.logo;
+      if (s.group) attrs["group-title"] = s.group;
+      entries.push({ name: s.name, url: s.sourceUrl, duration: "-1", attrs });
+    }
+    if (entries.length === 0) {
+      return new Response(
+        `#EXTM3U\n# Aucune chaîne configurée. Ajoutez vos sources dans /panel.\n`,
+        { status: 200, headers: M3U_HEADERS },
+      );
+    }
+    return new Response(buildM3U({ entries }), { status: 200, headers: M3U_HEADERS });
+  }
+
+  // Chaîne ajoutée depuis le panel (/panel).
+  const channel = await streamsStore.get(id);
+  if (channel) {
+    return new Response(buildM3U({ entries: [channelToEntry(channel)] }), {
+      status: 200,
+      headers: M3U_HEADERS,
+    });
+  }
+
+  // Flux hérités (app/lib/streams.ts).
+  const stream = getStream(id);
   if (!stream) {
     return new Response(`#EXTM3U\n# Flux introuvable : ${id}\n`, {
       status: 404,
