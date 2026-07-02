@@ -3,10 +3,17 @@ import { isPanelAuthed, unauthorized } from "../../../lib/panel-auth";
 
 export const dynamic = "force-dynamic";
 
-// GET /api/panel/channels -> liste des chaînes du panel.
-export async function GET() {
+// GET /api/panel/channels?search=&group=&page=&pageSize= -> chaînes paginées + facettes.
+export async function GET(request: Request) {
   if (!(await isPanelAuthed())) return unauthorized();
-  return Response.json({ channels: await streamsStore.list() });
+  const { searchParams } = new URL(request.url);
+  const page = await streamsStore.query({
+    search: searchParams.get("search") ?? undefined,
+    group: searchParams.get("group") ?? undefined,
+    page: Number(searchParams.get("page") ?? 1) || 1,
+    pageSize: Number(searchParams.get("pageSize") ?? 50) || 50,
+  });
+  return Response.json(page);
 }
 
 // POST /api/panel/channels { name, url, group?, logo? } -> ajout d'une chaîne directe.

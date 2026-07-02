@@ -21,6 +21,7 @@ function toChannels(content: string, origin: string): Omit<Channel, "id" | "adde
       url: e.url,
       logo: e.attrs["tvg-logo"] || undefined,
       group: e.attrs["group-title"] || undefined,
+      tvgId: e.attrs["tvg-id"] || undefined,
       source: "m3u" as const,
       origin,
     }));

@@ -1,20 +1,9 @@
 import { getStream, isConfigured, streams } from "../../lib/streams";
-import { buildM3U, type M3UEntry } from "../../lib/m3u";
-import { streamsStore, type Channel } from "../../lib/db/streams-store";
+import { buildM3U } from "../../lib/m3u";
+import { streamsStore } from "../../lib/db/streams-store";
+import { channelToEntry, m3uResponse, M3U_HEADERS } from "../../lib/playlist";
 
 export const dynamic = "force-dynamic";
-
-const M3U_HEADERS = {
-  "Content-Type": "audio/x-mpegurl; charset=utf-8",
-  "Content-Disposition": "inline",
-};
-
-function channelToEntry(c: Channel): M3UEntry {
-  const attrs: Record<string, string> = { "tvg-id": c.id, "tvg-name": c.name };
-  if (c.logo) attrs["tvg-logo"] = c.logo;
-  if (c.group) attrs["group-title"] = c.group;
-  return { name: c.name, url: c.url, duration: "-1", attrs };
-}
 
 // GET /playlist/all   →  M3U complet : chaînes du panel + flux configurés en dur.
 // GET /playlist/<id>  →  M3U mono-chaîne (chaîne du panel ou flux hérité).
@@ -26,6 +15,7 @@ export async function GET(
 
   if (id === "all") {
     const channels = await streamsStore.list();
+    const settings = await streamsStore.getSettings();
     const entries = channels.map(channelToEntry);
     for (const s of streams) {
       if (!isConfigured(s)) continue;
@@ -40,16 +30,15 @@ export async function GET(
         { status: 200, headers: M3U_HEADERS },
       );
     }
-    return new Response(buildM3U({ entries }), { status: 200, headers: M3U_HEADERS });
+    const header = settings.epgUrl ? '#EXTM3U url-tvg="/epg.xml"' : "#EXTM3U";
+    const body = buildM3U({ entries }).replace(/^#EXTM3U/, header);
+    return new Response(body, { status: 200, headers: M3U_HEADERS });
   }
 
   // Chaîne ajoutée depuis le panel (/panel).
   const channel = await streamsStore.get(id);
   if (channel) {
-    return new Response(buildM3U({ entries: [channelToEntry(channel)] }), {
-      status: 200,
-      headers: M3U_HEADERS,
-    });
+    return m3uResponse([channel]);
   }
 
   // Flux hérités (app/lib/streams.ts).

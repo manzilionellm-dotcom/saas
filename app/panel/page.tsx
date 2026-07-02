@@ -3,7 +3,9 @@ import { streamsStore } from "../lib/db/streams-store";
 import { isPanelAuthed, panelPassword } from "../lib/panel-auth";
 import LoginForm from "./LoginForm";
 import AddSourceForm from "./AddSourceForm";
-import ChannelList from "./ChannelList";
+import ChannelBrowser from "./ChannelBrowser";
+import ProfilesPanel from "./ProfilesPanel";
+import SettingsPanel from "./SettingsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -12,15 +14,15 @@ export default async function PanelPage() {
 
   return (
     <div className="min-h-full bg-zinc-50 font-sans dark:bg-zinc-950">
-      <main className="mx-auto max-w-4xl px-6 py-12">
+      <main className="mx-auto max-w-5xl px-6 py-12">
         <Link href="/" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
           ← Catalogue
         </Link>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          📡 Panel — Mes sources
+          📡 StreamCast — Panel
         </h1>
         <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-          Ajoutez vos chaînes vous-même : playlist M3U, compte Xtream Codes ou URL directe.
+          Vos chaînes, vos profils famille et le guide des programmes — tout au même endroit.
         </p>
 
         {!authed ? (
@@ -50,10 +52,19 @@ export default async function PanelPage() {
             </section>
 
             <section className="mt-10">
-              <ChannelList
-                total={await streamsStore.count()}
-                channels={await streamsStore.preview(300)}
+              <ProfilesPanel initialProfiles={await streamsStore.listProfiles()} />
+            </section>
+
+            <section className="mt-10">
+              <SettingsPanel initialSettings={await streamsStore.getSettings()} />
+            </section>
+
+            <section className="mt-10">
+              <ChannelBrowser
+                grandTotal={await streamsStore.count()}
+                groups={await streamsStore.groups()}
                 origins={await streamsStore.origins()}
+                profiles={await streamsStore.listProfiles()}
               />
             </section>
           </>
