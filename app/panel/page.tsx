@@ -70,6 +70,7 @@ export default async function PanelPage() {
                 groups={await streamsStore.groups()}
                 origins={await streamsStore.origins()}
                 profiles={await streamsStore.listProfiles()}
+                bouquets={await streamsStore.listBouquets()}
               />
             </section>
           </>

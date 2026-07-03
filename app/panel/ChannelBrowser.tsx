@@ -1,16 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { Channel, Profile } from "../lib/db/streams-store";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { Bouquet, Channel, Profile } from "../lib/db/streams-store";
 
 type Props = {
   grandTotal: number;
   groups: { group: string; count: number }[];
   origins: { origin: string; count: number }[];
   profiles: Profile[];
+  bouquets: Bouquet[];
 };
 
 type HealthState = Record<string, { ok: boolean; status?: number; error?: string }>;
+
+// Cible d'attribution des étoiles : un profil OU une catégorie.
+type Target = { kind: "profile" | "bouquet"; id: string };
 
 const field =
   "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
@@ -23,7 +27,13 @@ const SOURCE_LABEL: Record<Channel["source"], string> = {
 
 const PAGE_SIZE = 50;
 
-export default function ChannelBrowser({ grandTotal, groups, origins, profiles }: Props) {
+export default function ChannelBrowser({
+  grandTotal,
+  groups,
+  origins,
+  profiles: initialProfiles,
+  bouquets: initialBouquets,
+}: Props) {
   const [search, setSearch] = useState("");
   const [group, setGroup] = useState("");
   const [page, setPage] = useState(1);
@@ -33,10 +43,33 @@ export default function ChannelBrowser({ grandTotal, groups, origins, profiles }
   const [error, setError] = useState<string | null>(null);
   const [health, setHealth] = useState<HealthState>({});
   const [checking, setChecking] = useState(false);
-  const [activeProfile, setActiveProfile] = useState<string>(profiles[0]?.id ?? "");
-  const [favs, setFavs] = useState<Set<string>>(
-    () => new Set(profiles[0]?.favorites ?? []),
+
+  // Profils et catégories en état local : les modifications (étoiles, création,
+  // application) se voient immédiatement, même en changeant de cible.
+  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles);
+  const [bouquets, setBouquets] = useState<Bouquet[]>(initialBouquets);
+  const [target, setTarget] = useState<Target | null>(
+    initialProfiles[0]
+      ? { kind: "profile", id: initialProfiles[0].id }
+      : initialBouquets[0]
+        ? { kind: "bouquet", id: initialBouquets[0].id }
+        : null,
   );
+  const [newCat, setNewCat] = useState("");
+  const [applyProfileId, setApplyProfileId] = useState("");
+  const [notice, setNotice] = useState<string | null>(null);
+
+  // Chaînes de la cible active (favoris d'un profil, ou chaînes d'une catégorie).
+  const favs = useMemo(() => {
+    if (!target) return new Set<string>();
+    if (target.kind === "profile") {
+      return new Set(profiles.find((p) => p.id === target.id)?.favorites ?? []);
+    }
+    return new Set(bouquets.find((b) => b.id === target.id)?.channels ?? []);
+  }, [target, profiles, bouquets]);
+
+  const activeBouquet =
+    target?.kind === "bouquet" ? bouquets.find((b) => b.id === target.id) ?? null : null;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,34 +142,116 @@ export default function ChannelBrowser({ grandTotal, groups, origins, profiles }
     }
   }
 
-  function selectProfile(id: string) {
-    setActiveProfile(id);
-    const p = profiles.find((x) => x.id === id);
-    setFavs(new Set(p?.favorites ?? []));
-  }
-
+  // Ajoute/retire une chaîne de la cible active (profil ou catégorie).
   async function toggleFav(channelId: string) {
-    if (!activeProfile) return;
+    if (!target) return;
     const add = !favs.has(channelId);
-    // Optimiste
-    setFavs((prev) => {
-      const next = new Set(prev);
-      if (add) next.add(channelId);
-      else next.delete(channelId);
-      return next;
-    });
-    try {
-      await fetch(`/api/panel/profiles/${activeProfile}`, {
+    if (target.kind === "profile") {
+      setProfiles((prev) =>
+        prev.map((p) =>
+          p.id === target.id
+            ? {
+                ...p,
+                favorites: add
+                  ? [...p.favorites, channelId]
+                  : p.favorites.filter((f) => f !== channelId),
+              }
+            : p,
+        ),
+      );
+      fetch(`/api/panel/profiles/${target.id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "favorite", channelId, add }),
-      });
-    } catch {
-      // en cas d'échec, on recharge l'état au prochain rafraîchissement
+      }).catch(() => {});
+    } else {
+      setBouquets((prev) =>
+        prev.map((b) =>
+          b.id === target.id
+            ? {
+                ...b,
+                channels: add
+                  ? [...b.channels, channelId]
+                  : b.channels.filter((c) => c !== channelId),
+              }
+            : b,
+        ),
+      );
+      fetch(`/api/panel/bouquets/${target.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggle", channelId, add }),
+      }).catch(() => {});
     }
   }
 
+  async function createCategory() {
+    const name = newCat.trim();
+    if (!name) return;
+    setError(null);
+    try {
+      const res = await fetch("/api/panel/bouquets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+      setBouquets((prev) => [...prev, data.bouquet]);
+      setTarget({ kind: "bouquet", id: data.bouquet.id });
+      setNewCat("");
+      setNotice(`Catégorie « ${name} » créée. Cochez ses chaînes avec l'étoile ☆.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    }
+  }
+
+  async function deleteCategory(id: string) {
+    setError(null);
+    try {
+      const res = await fetch(`/api/panel/bouquets/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+      setBouquets((prev) => prev.filter((b) => b.id !== id));
+      if (target?.kind === "bouquet" && target.id === id) {
+        setTarget(profiles[0] ? { kind: "profile", id: profiles[0].id } : null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    }
+  }
+
+  // Applique la catégorie active à un profil : ce profil hérite de ses chaînes.
+  async function applyCategory() {
+    if (!activeBouquet || !applyProfileId) return;
+    setError(null);
+    try {
+      const res = await fetch(`/api/panel/bouquets/${activeBouquet.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "apply", profileId: applyProfileId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+      setProfiles((prev) => prev.map((p) => (p.id === applyProfileId ? data.profile : p)));
+      const pname = profiles.find((p) => p.id === applyProfileId)?.name ?? "profil";
+      setNotice(
+        `Catégorie « ${activeBouquet.name} » appliquée à ${pname} : ${data.profile.favorites.length} chaîne(s).`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    }
+  }
+
+  const hasTargets = profiles.length > 0 || bouquets.length > 0;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const chip = (active: boolean) =>
+    `rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+      active
+        ? "bg-indigo-600 text-white"
+        : "border border-zinc-300 text-zinc-600 hover:border-indigo-400 dark:border-zinc-700 dark:text-zinc-300"
+    }`;
 
   return (
     <div>
@@ -188,24 +303,105 @@ export default function ChannelBrowser({ grandTotal, groups, origins, profiles }
         </select>
       </div>
 
-      {/* Profil actif pour les favoris */}
-      {profiles.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-          <span className="text-zinc-500 dark:text-zinc-400">Favoris de :</span>
-          {profiles.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => selectProfile(p.id)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                activeProfile === p.id
-                  ? "bg-indigo-600 text-white"
-                  : "border border-zinc-300 text-zinc-600 hover:border-indigo-400 dark:border-zinc-700 dark:text-zinc-300"
-              }`}
-            >
-              {p.name}
-            </button>
-          ))}
+      {/* Attribution des chaînes : à un profil, ou à une catégorie réutilisable */}
+      {hasTargets && (
+        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Cochez les chaînes (étoile ☆) pour la cible sélectionnée. Une{" "}
+            <strong>catégorie</strong> se définit une fois et s&apos;applique ensuite à autant de
+            profils que vous voulez.
+          </p>
+
+          {profiles.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-zinc-400">Profils :</span>
+              {profiles.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setTarget({ kind: "profile", id: p.id })}
+                  className={chip(target?.kind === "profile" && target.id === p.id)}
+                >
+                  {p.name}{" "}
+                  <span className="opacity-70">
+                    ({p.favorites.length > 0 ? p.favorites.length : "tout"})
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-zinc-400">Catégories :</span>
+            {bouquets.map((b) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => setTarget({ kind: "bouquet", id: b.id })}
+                className={chip(target?.kind === "bouquet" && target.id === b.id)}
+              >
+                🏷️ {b.name} <span className="opacity-70">({b.channels.length})</span>
+              </button>
+            ))}
+            <span className="inline-flex items-center gap-1">
+              <input
+                value={newCat}
+                onChange={(e) => setNewCat(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && createCategory()}
+                placeholder="Nouvelle catégorie…"
+                className="w-40 rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs text-zinc-900 focus:border-indigo-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              />
+              <button
+                type="button"
+                onClick={createCategory}
+                className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
+              >
+                + Catégorie
+              </button>
+            </span>
+          </div>
+
+          {/* Outils d'une catégorie active : appliquer à un profil, supprimer */}
+          {activeBouquet && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                Donner « {activeBouquet.name} » à :
+              </span>
+              <select
+                value={applyProfileId}
+                onChange={(e) => setApplyProfileId(e.target.value)}
+                className="rounded-lg border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+              >
+                <option value="">Choisir un profil…</option>
+                {profiles.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={applyCategory}
+                disabled={!applyProfileId}
+                className="rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+              >
+                Appliquer
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteCategory(activeBouquet.id)}
+                className="ml-auto rounded-lg px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+              >
+                Supprimer la catégorie
+              </button>
+            </div>
+          )}
+
+          {notice && (
+            <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              {notice}
+            </p>
+          )}
         </div>
       )}
 
@@ -245,11 +441,11 @@ export default function ChannelBrowser({ grandTotal, groups, origins, profiles }
               const h = health[c.id];
               return (
                 <li key={c.id} className="flex items-center gap-3 px-4 py-2.5">
-                  {profiles.length > 0 && (
+                  {hasTargets && target && (
                     <button
                       type="button"
                       onClick={() => toggleFav(c.id)}
-                      title={favs.has(c.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                      title={favs.has(c.id) ? "Retirer de la cible" : "Ajouter à la cible"}
                       className={`text-lg leading-none transition-transform hover:scale-110 ${
                         favs.has(c.id) ? "text-amber-400" : "text-zinc-300 dark:text-zinc-600"
                       }`}

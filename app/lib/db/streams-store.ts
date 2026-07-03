@@ -36,6 +36,15 @@ export type Profile = {
   createdAt: string;
 };
 
+// Catégorie réutilisable : un ensemble de chaînes nommé (ex. « Papa », « Enfants »).
+// On la définit une fois, puis on l'applique à autant de profils qu'on veut.
+export type Bouquet = {
+  id: string;
+  name: string;
+  channels: string[]; // ids de chaînes
+  createdAt: string;
+};
+
 export type Settings = {
   epgUrl?: string;
   // URL de base du serveur de diffusion MediaMTX (ex. https://hls.mondomaine.com).
@@ -63,11 +72,12 @@ export type ChannelPage = {
 type StreamsDB = {
   channels: Channel[];
   profiles: Profile[];
+  bouquets: Bouquet[];
   settings: Settings;
 };
 
 function emptyDB(): StreamsDB {
-  return { channels: [], profiles: [], settings: {} };
+  return { channels: [], profiles: [], bouquets: [], settings: {} };
 }
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -85,6 +95,7 @@ class StreamsStore {
       this.cache = {
         channels: parsed.channels ?? [],
         profiles: parsed.profiles ?? [],
+        bouquets: parsed.bouquets ?? [],
         settings: parsed.settings ?? {},
       };
     } catch {
@@ -187,8 +198,9 @@ class StreamsStore {
     const db = await this.load();
     const before = db.channels.length;
     db.channels = db.channels.filter((c) => c.id !== id);
-    // Nettoie les favoris pointant vers cette chaîne.
+    // Nettoie les favoris et les catégories pointant vers cette chaîne.
     for (const p of db.profiles) p.favorites = p.favorites.filter((f) => f !== id);
+    for (const b of db.bouquets) b.channels = b.channels.filter((f) => f !== id);
     await this.persist(db);
     return db.channels.length < before;
   }
@@ -200,6 +212,7 @@ class StreamsStore {
     const removedIds = new Set(db.channels.filter((c) => c.origin === origin).map((c) => c.id));
     db.channels = db.channels.filter((c) => c.origin !== origin);
     for (const p of db.profiles) p.favorites = p.favorites.filter((f) => !removedIds.has(f));
+    for (const b of db.bouquets) b.channels = b.channels.filter((f) => !removedIds.has(f));
     await this.persist(db);
     return before - db.channels.length;
   }
@@ -255,6 +268,67 @@ class StreamsStore {
     const has = p.favorites.includes(channelId);
     if (add && !has) p.favorites.push(channelId);
     if (!add && has) p.favorites = p.favorites.filter((f) => f !== channelId);
+    await this.persist(db);
+    return p;
+  }
+
+  // --- Catégories (bouquets réutilisables) ----------------------------------
+
+  async listBouquets(): Promise<Bouquet[]> {
+    const db = await this.load();
+    return [...db.bouquets].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+
+  async createBouquet(name: string, channels: string[] = []): Promise<Bouquet> {
+    const db = await this.load();
+    const known = new Set(db.channels.map((c) => c.id));
+    const bouquet: Bouquet = {
+      id: newId(),
+      name,
+      channels: [...new Set(channels)].filter((id) => known.has(id)),
+      createdAt: new Date().toISOString(),
+    };
+    db.bouquets.push(bouquet);
+    await this.persist(db);
+    return bouquet;
+  }
+
+  async renameBouquet(id: string, name: string): Promise<Bouquet | null> {
+    const db = await this.load();
+    const b = db.bouquets.find((x) => x.id === id);
+    if (!b) return null;
+    b.name = name;
+    await this.persist(db);
+    return b;
+  }
+
+  async setBouquetChannel(id: string, channelId: string, add: boolean): Promise<Bouquet | null> {
+    const db = await this.load();
+    const b = db.bouquets.find((x) => x.id === id);
+    if (!b) return null;
+    const has = b.channels.includes(channelId);
+    if (add && !has) b.channels.push(channelId);
+    if (!add && has) b.channels = b.channels.filter((c) => c !== channelId);
+    await this.persist(db);
+    return b;
+  }
+
+  async deleteBouquet(id: string): Promise<boolean> {
+    const db = await this.load();
+    const before = db.bouquets.length;
+    db.bouquets = db.bouquets.filter((b) => b.id !== id);
+    await this.persist(db);
+    return db.bouquets.length < before;
+  }
+
+  // Applique une catégorie à un profil : remplace ses chaînes par celles de la
+  // catégorie. Le profil « hérite » ainsi de la sélection, sans re-cocher.
+  async applyBouquetToProfile(bouquetId: string, profileId: string): Promise<Profile | null> {
+    const db = await this.load();
+    const b = db.bouquets.find((x) => x.id === bouquetId);
+    const p = db.profiles.find((x) => x.id === profileId);
+    if (!b || !p) return null;
+    p.favorites = [...b.channels];
     await this.persist(db);
     return p;
   }
