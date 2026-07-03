@@ -7,6 +7,7 @@ import ChannelBrowser from "./ChannelBrowser";
 import ProfilesPanel from "./ProfilesPanel";
 import SettingsPanel from "./SettingsPanel";
 import SyncMediamtx from "./SyncMediamtx";
+import BackupPanel from "./BackupPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,10 @@ export default async function PanelPage() {
 
             <section className="mt-10">
               <SyncMediamtx />
+            </section>
+
+            <section className="mt-10">
+              <BackupPanel />
             </section>
 
             <section className="mt-10">

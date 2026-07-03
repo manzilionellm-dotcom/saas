@@ -398,6 +398,45 @@ class StreamsStore {
     await this.persist(db);
     return { ...db.settings };
   }
+
+  // --- Sauvegarde / restauration -------------------------------------------
+
+  // Copie complète de l'état (chaînes, profils, catégories, réglages).
+  async dump(): Promise<StreamsDB> {
+    const db = await this.load();
+    return JSON.parse(JSON.stringify(db)) as StreamsDB;
+  }
+
+  // Remplace tout l'état par le contenu d'une sauvegarde. Tolérant aux champs
+  // manquants, mais rejette un objet qui n'a rien d'une sauvegarde StreamCast.
+  async restore(
+    data: unknown,
+  ): Promise<{ channels: number; profiles: number; bouquets: number }> {
+    if (!data || typeof data !== "object") {
+      throw new Error("Fichier de sauvegarde invalide.");
+    }
+    const d = data as Partial<StreamsDB> & { _type?: string };
+    const looksValid =
+      d._type === "streamcast-backup" ||
+      Array.isArray(d.channels) ||
+      Array.isArray(d.profiles) ||
+      Array.isArray(d.bouquets);
+    if (!looksValid) {
+      throw new Error("Ce fichier n'est pas une sauvegarde StreamCast.");
+    }
+    const db: StreamsDB = {
+      channels: Array.isArray(d.channels) ? d.channels : [],
+      profiles: Array.isArray(d.profiles) ? d.profiles : [],
+      bouquets: Array.isArray(d.bouquets) ? d.bouquets : [],
+      settings: d.settings && typeof d.settings === "object" ? d.settings : {},
+    };
+    await this.persist(db);
+    return {
+      channels: db.channels.length,
+      profiles: db.profiles.length,
+      bouquets: db.bouquets.length,
+    };
+  }
 }
 
 // Singleton (évite de recharger le fichier à chaque requête en dev).
