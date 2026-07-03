@@ -3,7 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Hls from "hls.js";
 
-type Channel = { id: string; name: string; logo: string | null; group: string | null; url: string };
+type Channel = {
+  id: string;
+  name: string;
+  logo: string | null;
+  group: string | null;
+  url: string;
+  backupUrl?: string | null;
+};
 
 // Réglages hls.js orientés STABILITÉ (TV en direct) plutôt que latence minimale :
 // un tampon large absorbe la gigue réseau et les à-coups de la source, et on
@@ -14,9 +21,11 @@ const HLS_CONFIG = {
   backBufferLength: 60,
   maxBufferLength: 30, // ~30 s d'avance : encaisse les coupures courtes
   maxMaxBufferLength: 90,
-  manifestLoadingMaxRetry: 6,
-  manifestLoadingRetryDelay: 1000,
-  levelLoadingMaxRetry: 6,
+  // Manifeste : détection rapide d'une source morte (pour basculer vite sur le
+  // secours). Segments : nombreux ré-essais (stabilité d'un flux qui marche).
+  manifestLoadingMaxRetry: 2,
+  manifestLoadingRetryDelay: 500,
+  levelLoadingMaxRetry: 3,
   levelLoadingRetryDelay: 1000,
   fragLoadingMaxRetry: 8,
   fragLoadingRetryDelay: 1000,
@@ -57,16 +66,33 @@ export default function Player({ token }: { token: string }) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !current) return;
-    const url = current.url;
+    // Sources à essayer : principale, puis secours si elle existe. En cas
+    // d'échec répété, on BASCULE d'une source à l'autre → la chaîne ne reste
+    // pas noire tant qu'une des deux fonctionne.
+    const sources = current.backupUrl ? [current.url, current.backupUrl] : [current.url];
+    let sourceIndex = 0;
 
     let hls: Hls | null = null;
     let stopped = false;
     let reloadTimer: ReturnType<typeof setTimeout> | null = null;
     let consecutiveFatal = 0;
-    const MAX_INLINE_RECOVERIES = 4; // au-delà, on reconstruit le lecteur
+    const MAX_INLINE_RECOVERIES = 4; // au-delà, on reconstruit / on bascule
+
+    // Passe à la source suivante (secours ↔ principale) après trop d'échecs.
+    function switchSource() {
+      if (sources.length > 1) {
+        sourceIndex = (sourceIndex + 1) % sources.length;
+        setPlayError(
+          sourceIndex === 0 ? "Retour à la source principale…" : "Bascule sur la source de secours…",
+        );
+      } else {
+        setPlayError("Flux instable — nouvelle tentative…");
+      }
+    }
 
     function start() {
       if (stopped || !video) return;
+      const url = sources[sourceIndex];
       if (Hls.isSupported()) {
         hls = new Hls(HLS_CONFIG);
         hls.loadSource(url);
@@ -76,35 +102,38 @@ export default function Player({ token }: { token: string }) {
           consecutiveFatal = 0;
           setPlayError(null);
         });
+        const hasBackup = sources.length > 1;
         hls.on(Hls.Events.ERROR, (_e, data) => {
           if (!data.fatal) return; // hls.js gère seul les erreurs non fatales
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && consecutiveFatal < MAX_INLINE_RECOVERIES) {
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !hasBackup && consecutiveFatal < MAX_INLINE_RECOVERIES) {
+            // Pas de secours : on s'acharne sur l'unique source.
             consecutiveFatal++;
             setPlayError("Reconnexion au flux…");
-            hls?.startLoad(); // relance le chargement des segments
+            hls?.startLoad();
           } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && consecutiveFatal < MAX_INLINE_RECOVERIES) {
+            // Erreur de décodage : réparable sur place (même source).
             consecutiveFatal++;
             setPlayError("Récupération du flux…");
-            hls?.recoverMediaError(); // répare le tampon / le décodeur
+            hls?.recoverMediaError();
           } else {
-            // Trop d'échecs d'affilée ou erreur non récupérable : on reconstruit
-            // le lecteur après un court délai (la source peut revenir).
-            setPlayError("Flux instable — nouvelle tentative…");
+            // Source injoignable : on bascule (secours ↔ principale) et on
+            // reconstruit vite s'il y a un secours, sinon on temporise.
             hls?.destroy();
             hls = null;
             consecutiveFatal = 0;
-            reloadTimer = setTimeout(start, 4000);
+            switchSource();
+            reloadTimer = setTimeout(start, hasBackup ? 1500 : 4000);
           }
         });
       } else {
-        // Safari / iOS : HLS natif. On réessaie aussi en cas d'erreur.
+        // Safari / iOS : HLS natif. On réessaie / bascule aussi en cas d'erreur.
         video.src = url;
         video.onerror = () => {
           if (stopped) return;
-          setPlayError("Flux instable — nouvelle tentative…");
+          switchSource();
           reloadTimer = setTimeout(() => {
             if (stopped || !video) return;
-            video.src = url;
+            video.src = sources[sourceIndex];
             video.load();
             video.play().catch(() => {});
           }, 4000);

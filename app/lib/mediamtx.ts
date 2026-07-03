@@ -32,18 +32,34 @@ export function playbackUrl(baseUrl: string | undefined, c: Channel): string {
   return base ? `${base}/${mediamtxPath(c)}/index.m3u8` : c.url;
 }
 
+// URL de lecture de la source de SECOURS (chemin « <chemin>-secours »), ou null
+// si la chaîne n'a pas de source de secours. Le lecteur bascule dessus si la
+// source principale échoue.
+export function backupPlaybackUrl(baseUrl: string | undefined, c: Channel): string | null {
+  if (!c.backupUrl) return null;
+  const base = (baseUrl ?? "").replace(/\/+$/, "");
+  return base ? `${base}/${mediamtxPath(c)}-secours/index.m3u8` : c.backupUrl;
+}
+
 // Section `paths:` de mediamtx.yml : une entrée par chaîne, en mode à la demande
 // (la source n'est tirée que si quelqu'un regarde). Utilisée par l'export
 // téléchargeable ET par la synchro « Restreamer toutes les chaînes » du panel,
 // pour qu'elles produisent exactement le même résultat.
 export function mediamtxPathsBlock(channels: Channel[]): string {
   const lines = ["paths:"];
+  const onDemand = (c: Channel) => (c.alwaysOn ? "no" : "yes");
   for (const c of channels) {
     lines.push(`  ${mediamtxPath(c)}:`);
     lines.push(`    source: ${JSON.stringify(c.url)}`);
     // alwaysOn : source tirée en permanence (pas de délai au démarrage) ;
     // sinon à la demande (tirée seulement pendant qu'on regarde).
-    lines.push(`    sourceOnDemand: ${c.alwaysOn ? "no" : "yes"}`);
+    lines.push(`    sourceOnDemand: ${onDemand(c)}`);
+    // Source de secours : 2ᵉ chemin, le lecteur y bascule si la principale tombe.
+    if (c.backupUrl) {
+      lines.push(`  ${mediamtxPath(c)}-secours:`);
+      lines.push(`    source: ${JSON.stringify(c.backupUrl)}`);
+      lines.push(`    sourceOnDemand: ${onDemand(c)}`);
+    }
   }
   if (channels.length === 0) {
     lines.push("  # (aucune chaîne dans le panel pour l'instant)");

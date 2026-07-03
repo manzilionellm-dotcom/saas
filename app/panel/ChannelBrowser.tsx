@@ -158,6 +158,35 @@ export default function ChannelBrowser({
     }
   }
 
+  // Définit/efface l'URL de secours d'une chaîne (petite saisie inline).
+  async function editBackup(c: Channel) {
+    const input = window.prompt(
+      `URL de secours pour « ${c.name} » (si la source principale tombe, le lecteur bascule dessus). Laissez vide pour l'effacer.`,
+      c.backupUrl ?? "",
+    );
+    if (input === null) return; // annulé
+    const backupUrl = input.trim();
+    try {
+      const res = await fetch(`/api/panel/channels?id=${encodeURIComponent(c.id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ backupUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+      setItems((prev) =>
+        prev.map((x) => (x.id === c.id ? { ...x, backupUrl: backupUrl || undefined } : x)),
+      );
+      setNotice(
+        backupUrl
+          ? `Source de secours définie pour « ${c.name} ». Cliquez « Restreamer toutes les chaînes » pour appliquer.`
+          : `Source de secours retirée de « ${c.name} ».`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    }
+  }
+
   async function checkHealth() {
     if (items.length === 0) return;
     setChecking(true);
@@ -594,6 +623,22 @@ export default function ChannelBrowser({
                       {h.ok ? "● en ligne" : "● hors ligne"}
                     </span>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => editBackup(c)}
+                    title={
+                      c.backupUrl
+                        ? "Source de secours définie — cliquez pour la modifier/retirer"
+                        : "Ajouter une source de secours (bascule auto si la principale tombe)"
+                    }
+                    className={`shrink-0 rounded-lg px-2 py-1 text-xs font-medium transition-colors ${
+                      c.backupUrl
+                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                        : "text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400"
+                    }`}
+                  >
+                    {c.backupUrl ? "🛟 secours" : "🛟"}
+                  </button>
                   <button
                     type="button"
                     onClick={() => toggleAlwaysOn(c)}

@@ -29,6 +29,10 @@ export type Channel = {
   // → pas de délai au démarrage, mais consomme de la bande passante en continu.
   // Par défaut (absent/false) : à la demande (tirée seulement si quelqu'un regarde).
   alwaysOn?: boolean;
+  // URL de secours : si la source principale tombe, le lecteur bascule dessus
+  // automatiquement (chemin MediaMTX « <chemin>-secours »). La chaîne ne devient
+  // jamais noire tant qu'une des deux sources fonctionne.
+  backupUrl?: string;
   addedAt: string;
 };
 
@@ -228,6 +232,18 @@ class StreamsStore {
     if (!c) return null;
     if (alwaysOn) c.alwaysOn = true;
     else delete c.alwaysOn;
+    await this.persist(db);
+    return c;
+  }
+
+  // Définit (ou efface si vide) l'URL de secours d'une chaîne.
+  async setChannelBackup(id: string, backupUrl: string): Promise<Channel | null> {
+    const db = await this.load();
+    const c = db.channels.find((x) => x.id === id);
+    if (!c) return null;
+    const url = backupUrl.trim();
+    if (url) c.backupUrl = url;
+    else delete c.backupUrl;
     await this.persist(db);
     return c;
   }

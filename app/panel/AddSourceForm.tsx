@@ -27,6 +27,7 @@ export default function AddSourceForm() {
   const [dName, setDName] = useState("");
   const [dUrl, setDUrl] = useState("");
   const [dGroup, setDGroup] = useState("");
+  const [dBackup, setDBackup] = useState("");
 
   async function post(url: string, payload: unknown): Promise<Record<string, unknown>> {
     const res = await fetch(url, {
@@ -72,11 +73,17 @@ export default function AddSourceForm() {
         setXtUser("");
         setXtPass("");
       } else {
-        await post("/api/panel/channels", { name: dName, url: dUrl, group: dGroup });
+        await post("/api/panel/channels", {
+          name: dName,
+          url: dUrl,
+          group: dGroup,
+          backupUrl: dBackup,
+        });
         setMsg(`Chaîne « ${dName} » ajoutée.`);
         setDName("");
         setDUrl("");
         setDGroup("");
+        setDBackup("");
       }
       router.refresh();
     } catch (err) {
@@ -194,6 +201,20 @@ export default function AddSourceForm() {
                 value={dGroup}
                 onChange={(e) => setDGroup(e.target.value)}
                 placeholder="Burundi"
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <label className={label}>
+                URL de secours (optionnel) —{" "}
+                <span className="font-normal text-zinc-500">
+                  si la source principale tombe, le lecteur bascule dessus automatiquement
+                </span>
+              </label>
+              <input
+                className={field}
+                value={dBackup}
+                onChange={(e) => setDBackup(e.target.value)}
+                placeholder="https://…/secours.m3u8"
               />
             </div>
           </div>

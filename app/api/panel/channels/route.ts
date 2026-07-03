@@ -40,20 +40,26 @@ export async function POST(request: Request) {
   if (!/^https?:\/\//i.test(url)) {
     return Response.json({ error: "URL invalide (http/https attendu)." }, { status: 400 });
   }
+  const backupUrl = String(body.backupUrl ?? "").trim();
+  if (backupUrl && !/^https?:\/\//i.test(backupUrl)) {
+    return Response.json({ error: "URL de secours invalide (http/https attendu)." }, { status: 400 });
+  }
   const [channel] = await streamsStore.addMany([
     {
       name,
       url,
       group: String(body.group ?? "").trim() || undefined,
       logo: String(body.logo ?? "").trim() || undefined,
+      backupUrl: backupUrl || undefined,
       source: "direct",
     },
   ]);
   return Response.json({ channel }, { status: 201 });
 }
 
-// PATCH /api/panel/channels?id=<id>  { alwaysOn: bool }
-//   -> bascule une chaîne entre « toujours active » (24/7) et « à la demande ».
+// PATCH /api/panel/channels?id=<id>
+//   { alwaysOn: bool }   -> « toujours active » (24/7) ou « à la demande »
+//   { backupUrl: str }   -> définit/efface l'URL de secours (chaîne vide = efface)
 export async function PATCH(request: Request) {
   if (!(await isPanelAuthed())) return unauthorized();
   const id = new URL(request.url).searchParams.get("id");
@@ -64,6 +70,18 @@ export async function PATCH(request: Request) {
   } catch {
     return Response.json({ error: "Requête invalide." }, { status: 400 });
   }
+
+  if ("backupUrl" in body) {
+    const backupUrl = String(body.backupUrl ?? "").trim();
+    if (backupUrl && !/^https?:\/\//i.test(backupUrl)) {
+      return Response.json({ error: "URL de secours invalide (http/https attendu)." }, { status: 400 });
+    }
+    const channel = await streamsStore.setChannelBackup(id, backupUrl);
+    return channel
+      ? Response.json({ channel })
+      : Response.json({ error: "Chaîne introuvable." }, { status: 404 });
+  }
+
   const channel = await streamsStore.setChannelAlwaysOn(id, Boolean(body.alwaysOn));
   return channel
     ? Response.json({ channel })

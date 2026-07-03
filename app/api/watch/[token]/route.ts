@@ -1,5 +1,5 @@
 import { streamsStore } from "../../../lib/db/streams-store";
-import { playbackUrl } from "../../../lib/mediamtx";
+import { playbackUrl, backupPlaybackUrl } from "../../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +30,7 @@ export async function GET(
     logo: c.logo ?? null,
     group: c.group ?? null,
     url: playbackUrl(settings.hlsBaseUrl, c),
+    backupUrl: backupPlaybackUrl(settings.hlsBaseUrl, c),
   }));
 
   return Response.json({ profile: profile.name, channels });
