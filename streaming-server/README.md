@@ -10,15 +10,24 @@ simultanés en Full HD.
 > explicitement autorisé à redistribuer (ex. accord écrit avec la chaîne, comme RTNB).
 > Rediffuser des chaînes TV ou un abonnement IPTV sans accord est illégal.
 
-## 1. Commander le VPS
+> 💡 **Quel serveur selon l'audience ?** Voir [`ACHAT-VPS-1000.md`](./ACHAT-VPS-1000.md) :
+> section 0 pour **~200 spectateurs** (1 dédié 1 Gbit/s illimité, ~40-50 €/mois),
+> sections suivantes pour la montée à 1000 (port 10G / CDN).
 
-1. Créez un compte sur [hetzner.com](https://www.hetzner.com/cloud).
-2. Créez un serveur **CX22** (2 vCPU, 4 Go RAM, 20 To de trafic, ~5 €/mois).
-3. Image : **Ubuntu 24.04**. Ajoutez votre clé SSH.
-4. Notez l'adresse IP publique du serveur (appelée `<IP-VPS>` ci-dessous).
+## 1. Commander le serveur
 
-Dimensionnement (rappel) : 5 spectateurs Full HD ≈ 40 Mbit/s sortants — le CX22
-est très largement suffisant. Jusqu'à ~200 spectateurs, restez sur un seul VPS.
+**Pour la famille (quelques spectateurs)** : un petit VPS **Hetzner CX22**
+(2 vCPU, 4 Go, ~5 €/mois) suffit — 5 spectateurs Full HD ≈ 40 Mbit/s.
+
+**Pour ~200 spectateurs** : un **dédié Hetzner, port 1 Gbit/s à trafic illimité**
+(Server Auction ~39-45 €/mois, ou AX41/EX44 ~49 €). En HD 720p, 200 spectateurs
+≈ 800 Mbit/s, ça tient sur 1 Gbit/s. Détails et cahier des charges :
+[`ACHAT-VPS-1000.md`](./ACHAT-VPS-1000.md) (section 0).
+
+Ensuite, pour les deux cas :
+1. Créez un compte sur [hetzner.com](https://www.hetzner.com).
+2. Image : **Ubuntu 24.04**. Ajoutez votre clé SSH.
+3. Notez l'adresse IP publique du serveur (appelée `<IP-VPS>` ci-dessous).
 
 ## 2. Installer MediaMTX
 

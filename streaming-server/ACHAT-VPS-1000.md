@@ -1,8 +1,65 @@
-# Serveur pour ~1000 spectateurs simultanés (dimensionnement honnête)
+# Serveur de rediffusion — dimensionnement honnête (200 pour démarrer, 1000 plus tard)
 
-Guide + « cahier des charges » prêt à copier-coller. **Corrigé après vérification
-des offres réelles** : à cette échelle, le coût n'est PAS le matériel, c'est le
-**trafic sortant soutenu**. Lis la section 2 avant de commander quoi que ce soit.
+Guide + « cahier des charges » prêt à copier-coller. **Vérifié sur les offres
+réelles.** Commence par la **section 0 (200 spectateurs)** — c'est le point de
+départ recommandé, simple et pas cher. Les sections 1+ traitent la montée à 1000.
+
+## 0. POUR DÉMARRER : ~200 spectateurs = 1 seul serveur, ~40-50 €/mois
+
+À 200 spectateurs, tout **rentre dans un port 1 Gbit/s** — donc pas besoin de 10G
+ni de CDN. Le calcul :
+
+| Qualité | Débit/spectateur | 200 spectateurs | Tient sur 1 Gbit/s ? |
+|---|---|---|---|
+| SD ~576p | 2 Mbit/s | 400 Mbit/s | ✅ large |
+| **HD 720p** | 4 Mbit/s | **800 Mbit/s** | ✅ oui (garde le 720p) |
+| Full HD 1080p | 6 Mbit/s | 1,2 Gbit/s | ❌ dépasse 1 Gbit/s |
+
+➡️ **En HD 720p, 200 spectateurs = ~800 Mbit/s, ça passe sur un port 1 Gbit/s.**
+Pour rester confortable, vise le **720p** (le 1080p pour 200 simultanés
+dépasserait le port ; dans ce cas, limite le nombre ou prends plus de débit).
+
+**LE bon choix : un serveur dédié Hetzner, port 1 Gbit/s à trafic ILLIMITÉ.**
+Point vérifié : sur les dédiés Hetzner, le **port standard 1 Gbit/s inclut le
+trafic illimité et gratuit** (le plafond de 20 To ne concernait QUE l'option 10G).
+Donc aucune inquiétude de volume, même en direct plusieurs heures/jour.
+
+| Hébergeur | Offre | Réseau | Prix indicatif/mois |
+|---|---|---|---|
+| **Hetzner** (Server Auction) | machine d'occasion (Ryzen/Xeon, 32-64 Go) | 1 Gbit/s **illimité** | **~39-45 €** |
+| **Hetzner** | AX41 / EX44 (récent) | 1 Gbit/s **illimité** | **~49 €** |
+| **OVH** Rise (EU) | dédié entrée de gamme | 1 Gbit/s unmetered EU | ~45-70 € |
+
+Matériel : n'importe quel **4 cœurs+, 16 Go RAM, SSD** suffit largement (pas de
+réencodage). C'est le réseau qui compte, et 1 Gbit/s illimité règle tout.
+
+### Cahier des charges « 200 » (copier-coller)
+
+> Bonjour,
+> Je cherche un **serveur dédié en Europe** pour de la **rediffusion vidéo en
+> direct HLS (sans réencodage)** avec MediaMTX. Besoin :
+> - **~200 spectateurs simultanés en HD 720p** (~800 Mbit/s sortant au pic) ;
+> - **port 1 Gbit/s avec trafic ILLIMITÉ inclus** (confirmez qu'il n'y a pas de
+>   plafond de To ni de bridage sur ce port) ;
+> - **4 cœurs+, 16 Go RAM, ~200 Go SSD, Ubuntu 24.04, accès root SSH** ;
+> - datacenter **européen**.
+> Quelle offre correspond et à quel tarif mensuel tout compris ? Merci.
+
+Quand tu voudras dépasser ~250 simultanés en HD, reviens aux sections ci-dessous
+(port 10G ou CDN). **Mais pour lancer à 200, la section 0 suffit.**
+
+---
+
+## 1. Le calcul (le point que tout le monde oublie)
+
+Le mode « à la demande » économise l'**entrée** (chaque chaîne n'est tirée qu'une
+fois). Mais **chaque spectateur reçoit sa propre copie en sortie**. Donc :
+
+> **Débit sortant = nombre de spectateurs × débit d'une chaîne**
+> (indépendant du nombre de chaînes au catalogue — 15 000 ou 50, c'est pareil.)
+
+Pour aller **au-delà** (~1000 spectateurs), à cette échelle le coût n'est PAS le
+matériel, c'est le **trafic sortant soutenu**. Lis la section 2.
 
 ## 1. Le calcul (le point que tout le monde oublie)
 
