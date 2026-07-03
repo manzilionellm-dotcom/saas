@@ -236,6 +236,22 @@ class StreamsStore {
     return c;
   }
 
+  // Met à jour la catégorie (group) de plusieurs chaînes d'un coup (rangement IA).
+  async setChannelGroups(updates: { id: string; group: string }[]): Promise<number> {
+    const db = await this.load();
+    const map = new Map(updates.map((u) => [u.id, u.group]));
+    let n = 0;
+    for (const c of db.channels) {
+      const g = map.get(c.id);
+      if (g !== undefined) {
+        c.group = g.trim() || undefined;
+        n++;
+      }
+    }
+    await this.persist(db);
+    return n;
+  }
+
   // Définit (ou efface si vide) l'URL de secours d'une chaîne.
   async setChannelBackup(id: string, backupUrl: string): Promise<Channel | null> {
     const db = await this.load();

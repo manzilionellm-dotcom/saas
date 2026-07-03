@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Bouquet, Channel, Profile } from "../lib/db/streams-store";
 
 type Props = {
@@ -68,6 +68,8 @@ export default function ChannelBrowser({
   const [newCat, setNewCat] = useState("");
   const [applyProfileId, setApplyProfileId] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
+  const [aiBusy, setAiBusy] = useState(false);
+  const aiStop = useRef(false);
 
   // Chaînes de la cible active (favoris d'un profil, ou chaînes d'une catégorie).
   const favs = useMemo(() => {
@@ -184,6 +186,44 @@ export default function ChannelBrowser({
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    }
+  }
+
+  // Range les chaînes par catégorie avec l'IA, lot par lot (progression visible,
+  // arrêtable). Ne touche que les chaînes sans catégorie.
+  async function categorizeAI() {
+    setAiBusy(true);
+    setError(null);
+    setNotice(null);
+    aiStop.current = false;
+    let total = 0;
+    try {
+      while (!aiStop.current) {
+        const res = await fetch("/api/panel/ai/categorize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ onlyUngrouped: true, limit: 40 }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+        total += data.processed ?? 0;
+        setNotice(
+          `IA : ${total} chaîne(s) rangée(s)` +
+            (data.remaining ? `, ${data.remaining} restante(s)…` : "") +
+            (data.model ? ` (${data.model})` : ""),
+        );
+        if (data.done || (data.processed ?? 0) === 0 || aiStop.current) break;
+      }
+      setNotice(
+        total > 0
+          ? `IA : rangement terminé — ${total} chaîne(s) classée(s). Rechargement…`
+          : "Toutes les chaînes ont déjà une catégorie.",
+      );
+      if (total > 0) setTimeout(() => window.location.reload(), 1300);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
+    } finally {
+      setAiBusy(false);
     }
   }
 
@@ -369,7 +409,27 @@ export default function ChannelBrowser({
           Mes chaînes ({grandTotal.toLocaleString("fr-FR")})
         </h2>
         {grandTotal > 0 && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {aiBusy ? (
+              <button
+                type="button"
+                onClick={() => {
+                  aiStop.current = true;
+                }}
+                className="rounded-xl border border-amber-400 px-3 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-950/40"
+              >
+                ⏹ Arrêter le rangement
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={categorizeAI}
+                title="L'IA attribue une catégorie aux chaînes qui n'en ont pas"
+                className="rounded-xl border border-indigo-300 px-3 py-2 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-300 dark:hover:bg-indigo-950/40"
+              >
+                🤖 Ranger avec l&apos;IA
+              </button>
+            )}
             <button
               type="button"
               onClick={checkHealth}
