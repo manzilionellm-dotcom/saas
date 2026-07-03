@@ -24,14 +24,21 @@ Point vérifié : sur les dédiés Hetzner, le **port standard 1 Gbit/s inclut l
 trafic illimité et gratuit** (le plafond de 20 To ne concernait QUE l'option 10G).
 Donc aucune inquiétude de volume, même en direct plusieurs heures/jour.
 
-| Hébergeur | Offre | Réseau | Prix indicatif/mois |
+| Hébergeur | Offre | Réseau | Prix/mois (HT) |
 |---|---|---|---|
-| **Hetzner** (Server Auction) | machine d'occasion (Ryzen/Xeon, 32-64 Go) | 1 Gbit/s **illimité** | **~39-45 €** |
-| **Hetzner** | AX41 / EX44 (récent) | 1 Gbit/s **illimité** | **~49 €** |
-| **OVH** Rise (EU) | dédié entrée de gamme | 1 Gbit/s unmetered EU | ~45-70 € |
+| **Hetzner Server Auction** | machine d'occasion 4c/16-32 Go, mêmes DC EU | 1 Gbit/s **illimité** | **~30-45 €** (le moins cher) |
+| **Hetzner AX41** | Ryzen 5 3600, 6c/12t, 64 Go, 2×512 Go NVMe | 1 Gbit/s **illimité** | **59 €** (57,30 + 1,70 IPv4), setup 0 € |
 
 Matériel : n'importe quel **4 cœurs+, 16 Go RAM, SSD** suffit largement (pas de
-réencodage). C'est le réseau qui compte, et 1 Gbit/s illimité règle tout.
+réencodage). L'AX41 est même surdimensionné (6c/64 Go) — le Server Auction permet
+de descendre à ~30-45 € avec le **même port 1 Gbit/s illimité**. DC : Falkenstein
+(DE) ou Helsinki (FI), Ubuntu 24.04 en installation directe, root SSH.
+
+> ⚠️ **OVH : piège du « inclus ».** Sur les serveurs OVH Advance, le 1 Gbit/s
+> « inclus » est en réalité **plafonné à 25 To/mois** ; le vrai 1 Gbit/s illimité
+> est une option à **+400 €/mois**, et les modèles d'entrée de gamme sont souvent
+> **indisponibles en Europe** (stock APAC, où l'illimité n'est pas offert).
+> → Pour un 1 Gbit/s réellement illimité et abordable en EU, **Hetzner** est le choix.
 
 ### Cahier des charges « 200 » (copier-coller)
 
