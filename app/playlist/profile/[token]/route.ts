@@ -1,5 +1,6 @@
 import { streamsStore } from "../../../lib/db/streams-store";
 import { m3uResponse, M3U_HEADERS } from "../../../lib/playlist";
+import { playbackUrl } from "../../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +23,11 @@ export async function GET(
   const settings = await streamsStore.getSettings();
   const epg = !!settings.epgUrl;
 
-  if (profile.favorites.length > 0) {
-    const favs = await streamsStore.getMany(profile.favorites);
-    return m3uResponse(favs, { epg });
-  }
-  // Aucun favori : le profil voit tout le catalogue.
-  const all = await streamsStore.list();
-  return m3uResponse(all, { epg });
+  // Sert les chaînes via MediaMTX si un serveur de diffusion est configuré.
+  const source =
+    profile.favorites.length > 0
+      ? await streamsStore.getMany(profile.favorites) // ses favoris…
+      : await streamsStore.list(); // …sinon tout le catalogue.
+  const channels = source.map((c) => ({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }));
+  return m3uResponse(channels, { epg });
 }

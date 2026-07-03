@@ -1,4 +1,5 @@
 import { streamsStore } from "../../../lib/db/streams-store";
+import { playbackUrl } from "../../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -14,17 +15,21 @@ export async function GET(
     return Response.json({ error: "Lien invalide ou révoqué." }, { status: 404 });
   }
 
-  const source =
+  const [source, settings] = await Promise.all([
     profile.favorites.length > 0
-      ? await streamsStore.getMany(profile.favorites)
-      : await streamsStore.list();
+      ? streamsStore.getMany(profile.favorites)
+      : streamsStore.list(),
+    streamsStore.getSettings(),
+  ]);
 
+  // Si un serveur de diffusion est configuré, on sert l'URL restreamée par
+  // MediaMTX (source tirée une fois pour toute la famille) ; sinon la source.
   const channels = source.map((c) => ({
     id: c.id,
     name: c.name,
     logo: c.logo ?? null,
     group: c.group ?? null,
-    url: c.url,
+    url: playbackUrl(settings.hlsBaseUrl, c),
   }));
 
   return Response.json({ profile: profile.name, channels });

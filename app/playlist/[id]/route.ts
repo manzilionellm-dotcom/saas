@@ -2,6 +2,7 @@ import { getStream, isConfigured, streams } from "../../lib/streams";
 import { buildM3U } from "../../lib/m3u";
 import { streamsStore } from "../../lib/db/streams-store";
 import { channelToEntry, m3uResponse, M3U_HEADERS } from "../../lib/playlist";
+import { playbackUrl } from "../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,10 @@ export async function GET(
   if (id === "all") {
     const channels = await streamsStore.list();
     const settings = await streamsStore.getSettings();
-    const entries = channels.map(channelToEntry);
+    // Chaînes du panel : servies via MediaMTX si un serveur de diffusion est réglé.
+    const entries = channels.map((c) =>
+      channelToEntry({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }),
+    );
     for (const s of streams) {
       if (!isConfigured(s)) continue;
       const attrs: Record<string, string> = { "tvg-id": s.id, "tvg-name": s.name };
@@ -38,7 +42,8 @@ export async function GET(
   // Chaîne ajoutée depuis le panel (/panel).
   const channel = await streamsStore.get(id);
   if (channel) {
-    return m3uResponse([channel]);
+    const settings = await streamsStore.getSettings();
+    return m3uResponse([{ ...channel, url: playbackUrl(settings.hlsBaseUrl, channel) }]);
   }
 
   // Flux hérités (app/lib/streams.ts).

@@ -36,7 +36,14 @@ export type Profile = {
   createdAt: string;
 };
 
-export type Settings = { epgUrl?: string };
+export type Settings = {
+  epgUrl?: string;
+  // URL de base du serveur de diffusion MediaMTX (ex. https://hls.mondomaine.com).
+  // Renseignée : le lecteur web et les playlists servent l'URL restreamée de
+  // chaque chaîne (source tirée une fois, redistribuée à toute la famille).
+  // Vide : on sert l'URL source d'origine (utile en local, avant le VPS).
+  hlsBaseUrl?: string;
+};
 
 export type ChannelQuery = {
   search?: string;

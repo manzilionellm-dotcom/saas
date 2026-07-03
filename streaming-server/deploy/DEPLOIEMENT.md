@@ -79,7 +79,14 @@ Le script affiche à la fin le **mot de passe panel généré** (stocké dans
 1. Ouvrez `https://panel.exemple.com/panel`, connectez-vous.
 2. Importez vos sources (M3U multiple, Xtream, ou chaînes directes) ;
    renseignez l'URL EPG dans les réglages si vous en avez une.
-3. Sur le serveur : `streamcast-update-channels`
+3. **Réglages → « Serveur de diffusion »** : saisissez l'URL HLS de votre VPS,
+   `https://hls.exemple.com`, puis Enregistrer. **Étape essentielle** : sans
+   elle, le lecteur web et les playlists enverraient chaque spectateur
+   directement sur la source d'origine (qui limite souvent le nombre de
+   connexions simultanées). Avec elle, tout passe par MediaMTX : la source
+   n'est tirée qu'une fois et redistribuée → plusieurs profils regardent des
+   chaînes différentes en même temps sans jamais saturer la source.
+4. Sur le serveur : `streamcast-update-channels`
    → télécharge l'export du panel et recharge MediaMTX (avec retour arrière
    automatique si la config ne passe pas). **À relancer après chaque
    modification de chaînes** (ou via cron, voir plus bas).

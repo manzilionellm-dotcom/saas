@@ -1,19 +1,8 @@
-import { streamsStore, type Channel } from "../../../../lib/db/streams-store";
+import { streamsStore } from "../../../../lib/db/streams-store";
 import { isPanelAuthed, unauthorized } from "../../../../lib/panel-auth";
+import { mediamtxPath } from "../../../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
-
-// Nom de chemin MediaMTX : minuscules, alphanumérique et tirets, unique par id.
-function pathName(c: Channel): string {
-  const base = c.name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
-  return base ? `${base}-${c.id}` : c.id;
-}
 
 // GET /api/panel/export/mediamtx -> section `paths:` prête à coller dans
 // streaming-server/mediamtx.yml (chaque chaîne en mode à la demande).
@@ -29,7 +18,7 @@ export async function GET() {
     "paths:",
   ];
   for (const c of channels) {
-    lines.push(`  ${pathName(c)}:`);
+    lines.push(`  ${mediamtxPath(c)}:`);
     lines.push(`    source: ${JSON.stringify(c.url)}`);
     lines.push("    sourceOnDemand: yes");
   }

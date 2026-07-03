@@ -9,7 +9,7 @@ export async function GET() {
   return Response.json({ settings: await streamsStore.getSettings() });
 }
 
-// PUT /api/panel/settings { epgUrl } -> met à jour les réglages.
+// PUT /api/panel/settings { epgUrl, hlsBaseUrl } -> met à jour les réglages.
 export async function PUT(request: Request) {
   if (!(await isPanelAuthed())) return unauthorized();
   let body: Record<string, unknown>;
@@ -22,6 +22,17 @@ export async function PUT(request: Request) {
   if (epgUrl && !/^https?:\/\//i.test(epgUrl)) {
     return Response.json({ error: "URL EPG invalide (http/https attendu)." }, { status: 400 });
   }
-  const settings = await streamsStore.setSettings({ epgUrl: epgUrl || undefined });
+  // URL du serveur de diffusion : http/https, sans slash final (on l'ajoute nous-mêmes).
+  const hlsBaseUrl = String(body.hlsBaseUrl ?? "").trim().replace(/\/+$/, "");
+  if (hlsBaseUrl && !/^https?:\/\//i.test(hlsBaseUrl)) {
+    return Response.json(
+      { error: "URL du serveur de diffusion invalide (http/https attendu)." },
+      { status: 400 },
+    );
+  }
+  const settings = await streamsStore.setSettings({
+    epgUrl: epgUrl || undefined,
+    hlsBaseUrl: hlsBaseUrl || undefined,
+  });
   return Response.json({ settings });
 }
