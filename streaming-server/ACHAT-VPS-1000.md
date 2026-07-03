@@ -1,6 +1,8 @@
-# Acheter le serveur pour 1000 spectateurs simultanés (confort garanti)
+# Serveur pour ~1000 spectateurs simultanés (dimensionnement honnête)
 
-Guide + « cahier des charges » prêt à copier-coller pour commander le bon serveur.
+Guide + « cahier des charges » prêt à copier-coller. **Corrigé après vérification
+des offres réelles** : à cette échelle, le coût n'est PAS le matériel, c'est le
+**trafic sortant soutenu**. Lis la section 2 avant de commander quoi que ce soit.
 
 ## 1. Le calcul (le point que tout le monde oublie)
 
@@ -18,64 +20,99 @@ Pour **1000 spectateurs simultanés** :
 | HD 720p | 4 Mbit/s | **4 Gbit/s** |
 | Full HD 1080p | 6 Mbit/s | **6 Gbit/s** |
 
-➡️ **Conséquence : un petit VPS à 1 Gbit/s ne suffit PAS pour 1000 personnes.**
-Il faut un port réseau **10 Gbit/s**. Un seul bon serveur 10 Gbit/s pousse
-~1500–2000 spectateurs en HD sans transpirer (pas de réencodage = peu de CPU).
+➡️ Un VPS à 1 Gbit/s ne suffit pas. Mais un « 10 Gbit/s illimité pas cher »
+**n'existe quasiment pas** — voir ci-dessous.
 
-Trafic mensuel (si chacun regarde ~3 h/jour, en HD) : ~**160 To/mois**.
-→ prendre une offre **trafic illimité / unmetered**, sinon la facture explose.
+## 2. La réalité des offres (vérifiée)
 
-## 2. Ce qu'il faut acheter (recommandation)
+Le matériel (8+ cœurs, 16–32 Go, SSD) est trivial et bon marché partout. Le vrai
+facteur de coût, c'est l'**egress illimité à haut débit soutenu (4–6 Gbit/s)** :
 
-**Option A — Serveur dédié 10 Gbit/s illimité (LE meilleur choix pour 1000)**
-Un seul serveur, simple à gérer, coût fixe.
+- **Hetzner** — option 10 Gbit/s à +43 €/mois, **MAIS seulement 20 To/mois inclus**,
+  puis 1 €/To. Ce n'est donc pas de l'illimité : à 4 Gbit/s soutenu tu dépasses
+  20 To en ~11 h de direct cumulé. Inadapté à un vrai illimité 5 Gbit/s.
+  (source : Hetzner Docs — 10G Uplink / Traffic.)
+- **OVH** — la gamme **dédiée EU (Rise / bare-metal) est unmetered, tiée à la
+  vitesse de port**, ingress/egress gratuits — **sauf Asie-Pacifique** (l'illimité
+  n'y est PAS offert). Le piège : garantir 4–6 Gbit/s **soutenus** passe par des
+  options de bande passante garantie coûteuses (souvent +300 à +800 €/mois), et
+  certains modèles ne sont commandables qu'en stock APAC (donc sans illimité).
+  → Vérifier, au moment de commander, le **débit garanti réellement inclus** en
+  datacenter **européen**, pas seulement la mention « unmetered ».
+- **Scaleway (Dedibox), Cherry Servers, RedSwitches** — proposent du 10 Gbps EU
+  avec gros forfaits (ex. Cherry : ~100 To/mois inclus). À comparer selon ton
+  volume réel (section 3).
 
-| Hébergeur | Offre type | Réseau | Prix indicatif/mois |
+**Conclusion** : pour ~1000 spectateurs qui regardent plusieurs heures/jour, le
+« gros dédié 10G illimité à 150 € » est un mythe. Deux voies réalistes :
+
+### Voie A — Origine modeste + CDN (RECOMMANDÉ pour du HLS à 1000+)
+Le HLS se met en cache **à merveille** : le serveur d'origine sert chaque segment
+(~4 s) **une seule fois** au CDN, qui le rediffuse ensuite à tous les spectateurs.
+L'origine peut donc rester un petit VPS à 1 Gbit/s ; c'est le CDN qui encaisse le
+fan-out. On paie au Go **réellement diffusé** (pas de bande passante à garantir).
+- Bunny.net ≈ 0,005–0,01 €/Go, Cloudflare, etc.
+- Plus robuste (multi-POP mondial) et souvent **moins cher** qu'un dédié à bande
+  passante garantie, dès que l'audience est un peu dispersée.
+
+### Voie B — Un dédié à bande passante garantie
+Un seul serveur, simple, mais il faut **payer le débit garanti** (4–6 Gbit/s).
+Réaliste seulement si ton volume mensuel reste sous un forfait raisonnable, ou si
+l'hébergeur offre vraiment l'illimité EU à ce débit. Budget réel : **300–800 €/mois**.
+
+## 3. Calculer TON volume (le chiffre qui décide tout)
+
+Le coût dépend des **heures-spectateur/mois**, pas du pic seul :
+
+> **1 heure regardée** = débit × 3600 s
+> HD 720p (4 Mbit/s) ≈ **1,8 Go/heure** · Full HD (6 Mbit/s) ≈ **2,7 Go/heure**
+
+**Volume mensuel = (spectateurs moyens) × (heures/jour) × 30 × Go-par-heure**
+
+Exemples en HD720 (1,8 Go/h) :
+
+| Scénario | Calcul | Volume/mois | Coût CDN indicatif (0,007 €/Go) |
 |---|---|---|---|
-| **Hetzner** (dédié) | AX42 / AX52 (Ryzen, 64 Go) | 1 Gbit/s inclus, **10 Gbit/s en option** | ~45–70 € + option 10G |
-| **OVH** | Advance / Scale | **jusqu'à 10 Gbit/s unmetered** | ~120–250 € |
-| **Scaleway** | Dedibox | 10 Gbit/s selon gamme | ~100–200 € |
+| 1000 pers., 1 h/j | 1000×1×30×1,8 | ~54 To | ~380 € |
+| 1000 pers., 3 h/j | 1000×3×30×1,8 | ~162 To | ~1 130 € |
+| 200 moy. (pic 1000), 3 h/j | 200×3×30×1,8 | ~32 To | ~225 € |
 
-Pour 1000 spectateurs confortables, vise **8 cœurs+, 16–32 Go RAM, port 10 Gbit/s
-unmetered**. Le CPU sert peu (on copie le flux), c'est le **réseau** qui compte.
+➡️ **La question déterminante : combien d'heures de direct réellement regardées
+par mois ?** Un pic à 1000 mais une moyenne à 200 change tout le budget.
 
-**Option B — CDN devant un petit serveur (scale infini, zéro gestion réseau)**
-Le VPS reste petit ; un CDN (Bunny.net, Cloudflare) encaisse les spectateurs.
-- Bunny.net ≈ 0,01 €/Go → ~160 To = **~1 500 €/mois** (cher mais illimité et mondial).
-- À réserver si tu vises **bien au-delà** de 1000, ou une audience très dispersée.
-
-➡️ **Pour exactement ~1000 : Option A (dédié 10 Gbit/s).** Meilleur rapport
-prix/confort. On passe au CDN seulement si ça dépasse ~2000 simultanés.
-
-## 3. Cahier des charges à envoyer à l'hébergeur (copier-coller)
+## 4. Cahier des charges à envoyer à l'hébergeur (copier-coller)
 
 > Bonjour,
-> Je cherche un **serveur dédié** pour de la **rediffusion vidéo en direct (HLS,
-> sans réencodage)** avec MediaMTX. Besoin :
-> - **~1000 spectateurs simultanés en HD**, soit **4 à 6 Gbit/s de trafic sortant** soutenu ;
-> - **port réseau 10 Gbit/s** avec **trafic illimité (unmetered)** ou très gros forfait (≥ 200 To/mois) ;
-> - **8 vCPU/cœurs minimum, 16–32 Go de RAM** (pas de transcodage, priorité au réseau) ;
-> - disque modeste (100–200 Go SSD suffisent) ;
-> - **Ubuntu 24.04**, accès root SSH ;
-> - datacenter en **Europe** (audience francophone/diaspora).
-> Quelle offre correspond, et à quel tarif mensuel tout compris (port 10G inclus) ?
-> Merci.
+> Je cherche une solution pour de la **rediffusion vidéo en direct HLS (sans
+> réencodage)** avec MediaMTX, pour un **pic de ~1000 spectateurs HD simultanés**
+> (4–6 Gbit/s sortant soutenu, ~[À COMPLÉTER] To/mois estimés). Deux devis SVP :
+> 1. **Serveur dédié EU** (8 cœurs+, 16–32 Go, 200 Go SSD, Ubuntu 24.04, root SSH)
+>    avec le **débit public GARANTI réellement inclus en datacenter européen** et
+>    le **volume de trafic mensuel inclus** (préciser le prix au To au-delà).
+> 2. **Petit serveur d'origine + votre CDN** (le cas échéant), tarif au Go diffusé.
+> Merci de préciser, pour chaque option, le **coût mensuel tout compris** et si
+> l'illimité s'applique bien à la **région Europe**.
 
-## 4. Après l'achat
+## 5. Après l'achat
 
-1. Installer MediaMTX et le service systemd (voir `README.md` de ce dossier).
-2. Dans `mediamtx.yml`, garder `sourceOnDemand: yes` et `hlsAllowOrigin: "*"`
-   (indispensable pour le lecteur web `/watch`).
-3. Générer les chaînes depuis le panel : `/api/panel/export/mediamtx`.
-4. Vérifier la montée en charge : `vnstat -l` (trafic temps réel) pendant un pic.
-   Tant que la sortie reste < ~8 Gbit/s sur un port 10G, tout le monde est à l'aise.
+1. Installer MediaMTX + service systemd (voir `README.md` de ce dossier).
+2. Dans `mediamtx.yml` : garder `sourceOnDemand: yes` et `hlsAllowOrigin: "*"`
+   (indispensable pour le lecteur web `/watch` **et** pour qu'un CDN puisse lire l'origine).
+3. Si CDN : pointer le CDN sur l'origine `http://<serveur>:8888`, puis mettre les
+   URLs CDN comme « chaînes directes » dans le panel (ou régler l'URL de base).
+4. Générer les chaînes : `/api/panel/export/mediamtx`.
+5. Surveiller un pic en direct : `vnstat -l` (origine) + tableau de bord du CDN.
 
-## 5. Repères de coût
+## 6. Repères de coût (corrigés)
 
-| Audience simultanée | Serveur | Coût/mois indicatif |
+| Audience | Solution réaliste | Coût/mois |
 |---|---|---|
-| ~100 | 1 VPS 1 Gbit/s | 5–15 € |
-| **~1000** | **1 dédié 10 Gbit/s unmetered** | **80–250 €** |
-| 2000+ | dédié 10G + CDN, ou multi-serveurs | 300 €+ |
+| ~100 simultanés | 1 VPS 1 Gbit/s | 5–15 € |
+| **~1000 pic, faible volume** | petit VPS + CDN | **~200–400 €** |
+| **~1000, gros volume (3 h/j)** | VPS + CDN, ou dédié garanti | **~800–1 300 €** |
+| 2000+ | origine + CDN (obligatoire) | selon volume |
 
+> ⚠️ Les prix évoluent et dépendent de la région : **fais toujours confirmer par
+> l'hébergeur le débit garanti EU et le trafic inclus** avant de commander.
+>
 > ⚠️ Rappel : ne rediffuse que des flux que tu as le droit de redistribuer.
