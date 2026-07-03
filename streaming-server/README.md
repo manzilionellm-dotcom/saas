@@ -14,6 +14,13 @@ simultanés en Full HD.
 > section 0 pour **~200 spectateurs** (1 dédié 1 Gbit/s illimité, ~40-50 €/mois),
 > sections suivantes pour la montée à 1000 (port 10G / CDN).
 
+> 🚀 **Déploiement automatisé (recommandé en production)** : le dossier
+> [`deploy/`](./deploy/DEPLOIEMENT.md) installe tout en une commande —
+> MediaMTX + app Next.js + HTTPS (Caddy) + pare-feu — et fournit
+> `streamcast-update-channels` pour synchroniser les chaînes du panel.
+> Les étapes manuelles ci-dessous restent valables pour comprendre ou
+> pour un petit VPS familial.
+
 ## 1. Commander le serveur
 
 **Pour la famille (quelques spectateurs)** : un petit VPS **Hetzner CX22**
