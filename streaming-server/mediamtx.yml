@@ -16,6 +16,15 @@
 logLevel: info
 logDestinations: [stdout]
 
+# --- Stabilité (tampons & délais tolérants aux sources capricieuses) ----------
+# Délais de lecture/écriture plus larges : une source qui hoquette quelques
+# secondes n'est pas coupée aussitôt.
+readTimeout: 30s
+writeTimeout: 30s
+# File d'attente d'écriture par lecteur (puissance de 2) : encaisse un pic de
+# spectateurs ou un réseau lent sans lâcher les connexions.
+writeQueueSize: 1024
+
 # --- API de contrôle (locale uniquement, pour superviser le serveur) ---------
 api: yes
 apiAddress: 127.0.0.1:9997
@@ -30,7 +39,10 @@ metrics: no
 hls: yes
 hlsAddress: :8888
 hlsVariant: mpegts
-hlsSegmentCount: 7
+# Plus de segments en réserve = tampon plus profond côté lecteur : une coupure
+# réseau de quelques secondes est absorbée sans gel de l'image (au prix d'un
+# léger délai de démarrage, sans importance pour de la TV).
+hlsSegmentCount: 10
 hlsSegmentDuration: 1s
 hlsAllowOrigin: "*"
 
@@ -45,8 +57,10 @@ srt: no
 pathDefaults:
   # À la demande : la source n'est lue que s'il y a au moins un spectateur.
   sourceOnDemand: yes
-  # Délai avant de couper la source quand plus personne ne regarde.
-  sourceOnDemandCloseAfter: 10s
+  # Délai avant de couper la source quand plus personne ne regarde. 60 s : un
+  # spectateur qui zappe et revient (ou recharge la page) retrouve la chaîne
+  # déjà active, sans nouveau démarrage — plus fluide et plus doux pour la source.
+  sourceOnDemandCloseAfter: 60s
   # Temps maximum pour démarrer la source quand quelqu'un zappe dessus.
   sourceOnDemandStartTimeout: 15s
 

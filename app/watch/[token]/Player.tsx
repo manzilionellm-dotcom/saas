@@ -5,6 +5,23 @@ import Hls from "hls.js";
 
 type Channel = { id: string; name: string; logo: string | null; group: string | null; url: string };
 
+// Réglages hls.js orientés STABILITÉ (TV en direct) plutôt que latence minimale :
+// un tampon large absorbe la gigue réseau et les à-coups de la source, et on
+// autorise de nombreux ré-essais de chargement avant de considérer un segment perdu.
+const HLS_CONFIG = {
+  enableWorker: true,
+  lowLatencyMode: false, // la latence importe peu pour de la TV ; la fluidité, oui
+  backBufferLength: 60,
+  maxBufferLength: 30, // ~30 s d'avance : encaisse les coupures courtes
+  maxMaxBufferLength: 90,
+  manifestLoadingMaxRetry: 6,
+  manifestLoadingRetryDelay: 1000,
+  levelLoadingMaxRetry: 6,
+  levelLoadingRetryDelay: 1000,
+  fragLoadingMaxRetry: 8,
+  fragLoadingRetryDelay: 1000,
+} as const;
+
 export default function Player({ token }: { token: string }) {
   const [profile, setProfile] = useState<string>("");
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -32,31 +49,77 @@ export default function Player({ token }: { token: string }) {
     };
   }, [token]);
 
-  // (Re)charge le flux quand on change de chaîne.
-  // (L'effacement d'erreur se fait dans selectChannel, pas ici : on évite tout
-  //  setState synchrone dans l'effet.)
+  // (Re)charge le flux quand on change de chaîne, avec RÉCUPÉRATION AUTOMATIQUE :
+  // une coupure réseau ou un à-coup de la source ne fige plus la chaîne — le
+  // lecteur se reconnecte, récupère le décodeur, et se reconstruit en dernier
+  // recours. Une chaîne dont la source revient reprend donc toute seule.
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !current) return;
+    const url = current.url;
 
     let hls: Hls | null = null;
-    if (Hls.isSupported()) {
-      hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-      hls.loadSource(current.url);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.ERROR, (_e, data) => {
-        if (data.fatal) setPlayError("Flux indisponible ou bloqué par le navigateur (CORS).");
+    let stopped = false;
+    let reloadTimer: ReturnType<typeof setTimeout> | null = null;
+    let consecutiveFatal = 0;
+    const MAX_INLINE_RECOVERIES = 4; // au-delà, on reconstruit le lecteur
+
+    function start() {
+      if (stopped || !video) return;
+      if (Hls.isSupported()) {
+        hls = new Hls(HLS_CONFIG);
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        // Un segment lu = la chaîne est repartie : on remet le compteur à zéro.
+        hls.on(Hls.Events.FRAG_BUFFERED, () => {
+          consecutiveFatal = 0;
+          setPlayError(null);
+        });
+        hls.on(Hls.Events.ERROR, (_e, data) => {
+          if (!data.fatal) return; // hls.js gère seul les erreurs non fatales
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR && consecutiveFatal < MAX_INLINE_RECOVERIES) {
+            consecutiveFatal++;
+            setPlayError("Reconnexion au flux…");
+            hls?.startLoad(); // relance le chargement des segments
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && consecutiveFatal < MAX_INLINE_RECOVERIES) {
+            consecutiveFatal++;
+            setPlayError("Récupération du flux…");
+            hls?.recoverMediaError(); // répare le tampon / le décodeur
+          } else {
+            // Trop d'échecs d'affilée ou erreur non récupérable : on reconstruit
+            // le lecteur après un court délai (la source peut revenir).
+            setPlayError("Flux instable — nouvelle tentative…");
+            hls?.destroy();
+            hls = null;
+            consecutiveFatal = 0;
+            reloadTimer = setTimeout(start, 4000);
+          }
+        });
+      } else {
+        // Safari / iOS : HLS natif. On réessaie aussi en cas d'erreur.
+        video.src = url;
+        video.onerror = () => {
+          if (stopped) return;
+          setPlayError("Flux instable — nouvelle tentative…");
+          reloadTimer = setTimeout(() => {
+            if (stopped || !video) return;
+            video.src = url;
+            video.load();
+            video.play().catch(() => {});
+          }, 4000);
+        };
+      }
+      video.play().catch(() => {
+        /* l'autoplay peut être bloqué : l'utilisateur cliquera sur lecture */
       });
-    } else {
-      // Safari / iOS : HLS natif. Sur les navigateurs sans support, l'événement
-      // onError de la balise <video> affichera le message.
-      video.src = current.url;
     }
-    video.play().catch(() => {
-      /* l'autoplay peut être bloqué : l'utilisateur cliquera sur lecture */
-    });
+
+    start();
 
     return () => {
+      stopped = true;
+      if (reloadTimer) clearTimeout(reloadTimer);
+      if (video) video.onerror = null;
       if (hls) hls.destroy();
     };
   }, [current]);
@@ -100,7 +163,6 @@ export default function Player({ token }: { token: string }) {
             ref={videoRef}
             controls
             playsInline
-            onError={() => setPlayError("Flux indisponible ou format non lisible par le navigateur.")}
             className="max-h-[60vh] w-full lg:max-h-full"
           />
           {playError && (
