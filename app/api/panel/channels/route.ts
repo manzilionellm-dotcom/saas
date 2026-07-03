@@ -4,9 +4,18 @@ import { isPanelAuthed, unauthorized } from "../../../lib/panel-auth";
 export const dynamic = "force-dynamic";
 
 // GET /api/panel/channels?search=&group=&page=&pageSize= -> chaînes paginées + facettes.
+// GET /api/panel/channels?search=&group=&ids=1 -> uniquement les ids du filtre
+// (pour « tout ajouter » un thème/pays à une catégorie ou un profil).
 export async function GET(request: Request) {
   if (!(await isPanelAuthed())) return unauthorized();
   const { searchParams } = new URL(request.url);
+  if (searchParams.get("ids") === "1") {
+    const ids = await streamsStore.idsMatching({
+      search: searchParams.get("search") ?? undefined,
+      group: searchParams.get("group") ?? undefined,
+    });
+    return Response.json({ ids });
+  }
   const page = await streamsStore.query({
     search: searchParams.get("search") ?? undefined,
     group: searchParams.get("group") ?? undefined,

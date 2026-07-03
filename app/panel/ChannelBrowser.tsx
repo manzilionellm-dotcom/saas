@@ -27,6 +27,16 @@ const SOURCE_LABEL: Record<Channel["source"], string> = {
 
 const PAGE_SIZE = 50;
 
+// Fusionne des ids dans une liste (ajout ou retrait), sans doublon.
+function mergeIds(current: string[], ids: string[], add: boolean): string[] {
+  const set = new Set(current);
+  for (const id of ids) {
+    if (add) set.add(id);
+    else set.delete(id);
+  }
+  return [...set];
+}
+
 export default function ChannelBrowser({
   grandTotal,
   groups,
@@ -70,6 +80,12 @@ export default function ChannelBrowser({
 
   const activeBouquet =
     target?.kind === "bouquet" ? bouquets.find((b) => b.id === target.id) ?? null : null;
+
+  const targetName = target
+    ? (target.kind === "profile"
+        ? profiles.find((p) => p.id === target.id)?.name
+        : bouquets.find((b) => b.id === target.id)?.name) ?? ""
+    : "";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,6 +198,48 @@ export default function ChannelBrowser({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "toggle", channelId, add }),
       }).catch(() => {});
+    }
+  }
+
+  // Ajoute/retire d'un coup TOUTES les chaînes du filtre courant (thème/pays)
+  // à la cible active. Récupère les ids côté serveur pour couvrir toutes les pages.
+  async function bulkAssign(add: boolean) {
+    if (!target) return;
+    setError(null);
+    try {
+      const params = new URLSearchParams({ search, group, ids: "1" });
+      const res = await fetch(`/api/panel/channels?${params}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(String(data?.error ?? "Erreur"));
+      const ids: string[] = data.ids ?? [];
+      if (target.kind === "profile") {
+        setProfiles((prev) =>
+          prev.map((p) =>
+            p.id === target.id ? { ...p, favorites: mergeIds(p.favorites, ids, add) } : p,
+          ),
+        );
+        await fetch(`/api/panel/profiles/${target.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "favoriteMany", channelIds: ids, add }),
+        });
+      } else {
+        setBouquets((prev) =>
+          prev.map((b) =>
+            b.id === target.id ? { ...b, channels: mergeIds(b.channels, ids, add) } : b,
+          ),
+        );
+        await fetch(`/api/panel/bouquets/${target.id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "toggleMany", channelIds: ids, add }),
+        });
+      }
+      setNotice(
+        `${ids.length} chaîne(s) ${add ? "ajoutée(s) à" : "retirée(s) de"} « ${targetName} ».`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inattendue.");
     }
   }
 
@@ -360,6 +418,37 @@ export default function ChannelBrowser({
               </button>
             </span>
           </div>
+
+          {/* Sélection en masse : tout le thème/pays filtré vers la cible active */}
+          {target && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                {group || search ? (
+                  <>
+                    Filtre en cours — <strong>{total.toLocaleString("fr-FR")}</strong> chaîne(s) :
+                  </>
+                ) : (
+                  <>
+                    Tout le catalogue — <strong>{total.toLocaleString("fr-FR")}</strong> chaîne(s) :
+                  </>
+                )}
+              </span>
+              <button
+                type="button"
+                onClick={() => bulkAssign(true)}
+                className="rounded-lg bg-amber-500 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-amber-600"
+              >
+                ★ Tout ajouter à « {targetName} »
+              </button>
+              <button
+                type="button"
+                onClick={() => bulkAssign(false)}
+                className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-600 transition-colors hover:border-red-400 hover:text-red-600 dark:border-zinc-700 dark:text-zinc-300"
+              >
+                ☆ Tout retirer
+              </button>
+            </div>
+          )}
 
           {/* Outils d'une catégorie active : appliquer à un profil, supprimer */}
           {activeBouquet && (

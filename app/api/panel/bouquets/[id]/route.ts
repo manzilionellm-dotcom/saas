@@ -37,6 +37,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       : Response.json({ error: "Catégorie introuvable." }, { status: 404 });
   }
 
+  if (action === "toggleMany") {
+    const channelIds = Array.isArray(body.channelIds) ? body.channelIds.map(String) : [];
+    const b = await streamsStore.setBouquetChannelMany(id, channelIds, Boolean(body.add));
+    return b
+      ? Response.json({ bouquet: b })
+      : Response.json({ error: "Catégorie introuvable." }, { status: 404 });
+  }
+
   if (action === "apply") {
     const profileId = String(body.profileId ?? "");
     if (!profileId) return Response.json({ error: "profileId requis." }, { status: 400 });

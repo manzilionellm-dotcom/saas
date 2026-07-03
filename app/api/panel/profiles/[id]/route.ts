@@ -34,5 +34,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       : Response.json({ error: "Profil introuvable." }, { status: 404 });
   }
 
+  if (action === "favoriteMany") {
+    const channelIds = Array.isArray(body.channelIds) ? body.channelIds.map(String) : [];
+    const p = await streamsStore.setFavoriteMany(id, channelIds, Boolean(body.add));
+    return p
+      ? Response.json({ profile: p })
+      : Response.json({ error: "Profil introuvable." }, { status: 404 });
+  }
+
   return Response.json({ error: "Action inconnue." }, { status: 400 });
 }

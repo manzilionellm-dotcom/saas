@@ -162,6 +162,18 @@ class StreamsStore {
     };
   }
 
+  // Tous les ids de chaînes correspondant à un filtre (sans pagination) : sert
+  // à « tout ajouter » un thème/pays à une catégorie ou un profil.
+  async idsMatching(q: { search?: string; group?: string }): Promise<string[]> {
+    const db = await this.load();
+    const search = (q.search ?? "").trim().toLowerCase();
+    const group = (q.group ?? "").trim();
+    let filtered = db.channels;
+    if (group) filtered = filtered.filter((c) => (c.group ?? "") === group);
+    if (search) filtered = filtered.filter((c) => c.name.toLowerCase().includes(search));
+    return filtered.map((c) => c.id);
+  }
+
   // Groupes (catégories) avec leur nombre de chaînes, triés par volume.
   async groups(): Promise<{ group: string; count: number }[]> {
     const db = await this.load();
@@ -272,6 +284,26 @@ class StreamsStore {
     return p;
   }
 
+  // Ajoute/retire plusieurs chaînes d'un coup aux favoris d'un profil.
+  async setFavoriteMany(
+    profileId: string,
+    channelIds: string[],
+    add: boolean,
+  ): Promise<Profile | null> {
+    const db = await this.load();
+    const p = db.profiles.find((x) => x.id === profileId);
+    if (!p) return null;
+    const known = new Set(db.channels.map((c) => c.id));
+    const set = new Set(p.favorites);
+    for (const id of channelIds) {
+      if (add) set.add(id);
+      else set.delete(id);
+    }
+    p.favorites = [...set].filter((id) => known.has(id));
+    await this.persist(db);
+    return p;
+  }
+
   // --- Catégories (bouquets réutilisables) ----------------------------------
 
   async listBouquets(): Promise<Bouquet[]> {
@@ -309,6 +341,26 @@ class StreamsStore {
     const has = b.channels.includes(channelId);
     if (add && !has) b.channels.push(channelId);
     if (!add && has) b.channels = b.channels.filter((c) => c !== channelId);
+    await this.persist(db);
+    return b;
+  }
+
+  // Ajoute/retire plusieurs chaînes d'un coup à une catégorie (ex. tout un thème).
+  async setBouquetChannelMany(
+    id: string,
+    channelIds: string[],
+    add: boolean,
+  ): Promise<Bouquet | null> {
+    const db = await this.load();
+    const b = db.bouquets.find((x) => x.id === id);
+    if (!b) return null;
+    const known = new Set(db.channels.map((c) => c.id));
+    const set = new Set(b.channels);
+    for (const cid of channelIds) {
+      if (add) set.add(cid);
+      else set.delete(cid);
+    }
+    b.channels = [...set].filter((cid) => known.has(cid));
     await this.persist(db);
     return b;
   }
