@@ -25,6 +25,10 @@ export type Channel = {
   source: ChannelSource;
   // Étiquette de provenance (nom de la playlist, hôte Xtream…) pour gérer les imports.
   origin?: string;
+  // Si vrai : chaîne restreamée en PERMANENCE (sourceOnDemand: no dans MediaMTX)
+  // → pas de délai au démarrage, mais consomme de la bande passante en continu.
+  // Par défaut (absent/false) : à la demande (tirée seulement si quelqu'un regarde).
+  alwaysOn?: boolean;
   addedAt: string;
 };
 
@@ -215,6 +219,17 @@ class StreamsStore {
     for (const b of db.bouquets) b.channels = b.channels.filter((f) => f !== id);
     await this.persist(db);
     return db.channels.length < before;
+  }
+
+  // Bascule une chaîne entre « toujours active » (24/7) et « à la demande ».
+  async setChannelAlwaysOn(id: string, alwaysOn: boolean): Promise<Channel | null> {
+    const db = await this.load();
+    const c = db.channels.find((x) => x.id === id);
+    if (!c) return null;
+    if (alwaysOn) c.alwaysOn = true;
+    else delete c.alwaysOn;
+    await this.persist(db);
+    return c;
   }
 
   // Supprime toutes les chaînes issues d'une même provenance (playlist/compte).

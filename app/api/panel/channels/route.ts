@@ -52,6 +52,24 @@ export async function POST(request: Request) {
   return Response.json({ channel }, { status: 201 });
 }
 
+// PATCH /api/panel/channels?id=<id>  { alwaysOn: bool }
+//   -> bascule une chaîne entre « toujours active » (24/7) et « à la demande ».
+export async function PATCH(request: Request) {
+  if (!(await isPanelAuthed())) return unauthorized();
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) return Response.json({ error: "Paramètre id requis." }, { status: 400 });
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return Response.json({ error: "Requête invalide." }, { status: 400 });
+  }
+  const channel = await streamsStore.setChannelAlwaysOn(id, Boolean(body.alwaysOn));
+  return channel
+    ? Response.json({ channel })
+    : Response.json({ error: "Chaîne introuvable." }, { status: 404 });
+}
+
 // DELETE /api/panel/channels?id=<id> | ?origin=<origin> -> suppression.
 export async function DELETE(request: Request) {
   if (!(await isPanelAuthed())) return unauthorized();

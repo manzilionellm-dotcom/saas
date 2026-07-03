@@ -136,6 +136,28 @@ export default function ChannelBrowser({
     }
   }
 
+  // Bascule « toujours active » (24/7) ↔ « à la demande » pour une chaîne.
+  async function toggleAlwaysOn(c: Channel) {
+    const next = !c.alwaysOn;
+    setItems((prev) => prev.map((x) => (x.id === c.id ? { ...x, alwaysOn: next } : x)));
+    try {
+      const res = await fetch(`/api/panel/channels?id=${encodeURIComponent(c.id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alwaysOn: next }),
+      });
+      if (!res.ok) throw new Error();
+      setNotice(
+        next
+          ? `« ${c.name} » : toujours active. Cliquez « Restreamer toutes les chaînes » pour appliquer.`
+          : `« ${c.name} » : repassée à la demande. Re-synchronisez pour appliquer.`,
+      );
+    } catch {
+      // Revient à l'état précédent en cas d'échec.
+      setItems((prev) => prev.map((x) => (x.id === c.id ? { ...x, alwaysOn: c.alwaysOn } : x)));
+    }
+  }
+
   async function checkHealth() {
     if (items.length === 0) return;
     setChecking(true);
@@ -572,6 +594,22 @@ export default function ChannelBrowser({
                       {h.ok ? "● en ligne" : "● hors ligne"}
                     </span>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => toggleAlwaysOn(c)}
+                    title={
+                      c.alwaysOn
+                        ? "Toujours active (24/7) — cliquez pour repasser à la demande"
+                        : "À la demande (économe) — cliquez pour la garder toujours active"
+                    }
+                    className={`shrink-0 rounded-lg px-2 py-1 text-xs font-medium transition-colors ${
+                      c.alwaysOn
+                        ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+                        : "text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400"
+                    }`}
+                  >
+                    {c.alwaysOn ? "⚡ 24/7" : "⏻"}
+                  </button>
                   <a
                     href={`/playlist/${c.id}`}
                     className="shrink-0 text-xs text-indigo-600 hover:underline dark:text-indigo-400"

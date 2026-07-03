@@ -41,7 +41,9 @@ export function mediamtxPathsBlock(channels: Channel[]): string {
   for (const c of channels) {
     lines.push(`  ${mediamtxPath(c)}:`);
     lines.push(`    source: ${JSON.stringify(c.url)}`);
-    lines.push("    sourceOnDemand: yes");
+    // alwaysOn : source tirée en permanence (pas de délai au démarrage) ;
+    // sinon à la demande (tirée seulement pendant qu'on regarde).
+    lines.push(`    sourceOnDemand: ${c.alwaysOn ? "no" : "yes"}`);
   }
   if (channels.length === 0) {
     lines.push("  # (aucune chaîne dans le panel pour l'instant)");
