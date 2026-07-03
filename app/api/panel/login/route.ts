@@ -34,11 +34,17 @@ export async function POST(request: Request) {
     return Response.json({ error: "Mot de passe incorrect." }, { status: 401 });
   }
   recordLoginSuccess();
+  // Cookie `secure` uniquement si la requête est réellement en HTTPS (derrière
+  // Caddy). En accès direct par IP en HTTP (mode démarrage), un cookie secure
+  // ne serait jamais renvoyé par le navigateur → connexion impossible.
+  const proto =
+    request.headers.get("x-forwarded-proto") ??
+    new URL(request.url).protocol.replace(":", "");
   const store = await cookies();
   store.set(PANEL_COOKIE, panelToken(), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: proto === "https",
     maxAge: 60 * 60 * 24 * 30, // 30 jours
   });
   return Response.json({ ok: true });

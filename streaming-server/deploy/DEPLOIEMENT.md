@@ -10,9 +10,23 @@ pare-feu, sur **un seul dédié Hetzner** (port 1 Gbit/s illimité, Ubuntu 24.04
 
 ## Contenu
 
+## Deux modes de démarrage
+
+| Mode | Script | Quand |
+|---|---|---|
+| **Par IP (HTTP)** | `install-ip.sh` | Vous n'avez pas encore de domaine. Tout marche tout de suite par l'IP publique (app sur `:3000`, HLS sur `:8888`). Non chiffré → pour démarrer/tester. |
+| **Domaine (HTTPS)** | `install.sh` | Vous avez deux (sous-)domaines. HTTPS automatique via Caddy, ports 3000/8888 fermés. **Recommandé en production.** |
+
+Passer de l'un à l'autre ne recasse rien : les chaînes et profils sont conservés
+(`/opt/streamcast/app/.data`). Il suffit de lancer l'autre script et de mettre à
+jour l'URL « Serveur de diffusion » dans le panel.
+
+## Contenu
+
 | Fichier | Rôle |
 |---|---|
-| `install.sh` | Installation/mise à jour complète, idempotente (relançable) |
+| `install.sh` | Installation/mise à jour complète HTTPS, idempotente (relançable) |
+| `install-ip.sh` | Démarrage rapide par IP, sans domaine ni HTTPS |
 | `update-channels.sh` | Synchronise les chaînes du panel → MediaMTX (installé en `streamcast-update-channels`) |
 | `Caddyfile` | Reverse proxy HTTPS (panel + HLS), certificats automatiques |
 | `streamcast-app.service` | Service systemd de l'app Next.js (port local 3000) |
