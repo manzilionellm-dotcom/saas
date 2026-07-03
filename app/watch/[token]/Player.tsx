@@ -27,6 +27,7 @@ export default function Player({ token }: { token: string }) {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [current, setCurrent] = useState<Channel | null>(null);
   const [search, setSearch] = useState("");
+  const [group, setGroup] = useState("");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [playError, setPlayError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -129,10 +130,27 @@ export default function Player({ token }: { token: string }) {
     setCurrent(c);
   }
 
+  // Catégories présentes dans les chaînes du profil (avec leur nombre), pour
+  // naviguer par thème/pays au lieu de faire défiler une longue liste à plat.
+  const groups = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const c of channels) {
+      const g = c.group ?? "";
+      if (g) m.set(g, (m.get(g) ?? 0) + 1);
+    }
+    return [...m.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [channels]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return q ? channels.filter((c) => c.name.toLowerCase().includes(q)) : channels;
-  }, [channels, search]);
+    return channels.filter(
+      (c) =>
+        (!group || (c.group ?? "") === group) &&
+        (!q || c.name.toLowerCase().includes(q)),
+    );
+  }, [channels, search, group]);
 
   if (loadError) {
     return (
@@ -189,13 +207,27 @@ export default function Player({ token }: { token: string }) {
 
       {/* Liste des chaînes */}
       <aside className="flex w-full flex-col border-t border-zinc-800 lg:w-80 lg:border-l lg:border-t-0">
-        <div className="p-3">
+        <div className="flex flex-col gap-2 p-3">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="🔎 Rechercher…"
             className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none"
           />
+          {groups.length > 0 && (
+            <select
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="">Toutes les catégories ({channels.length})</option>
+              {groups.map((g) => (
+                <option key={g.name} value={g.name}>
+                  {g.name} ({g.count})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <ul className="flex-1 overflow-y-auto">
           {filtered.map((c) => (
