@@ -38,7 +38,9 @@ export async function POST(request: Request) {
   store.set(PANEL_COOKIE, panelToken(), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    // Cookie "Secure" seulement si servi en HTTPS (COOKIE_SECURE=1). Par défaut off
+    // pour que le panel fonctionne aussi en HTTP direct (accès par IP sans TLS).
+    secure: process.env.COOKIE_SECURE === "1",
     maxAge: 60 * 60 * 24 * 30, // 30 jours
   });
   return Response.json({ ok: true });
