@@ -24,10 +24,30 @@ simultanés en Full HD.
 ≈ 800 Mbit/s, ça tient sur 1 Gbit/s. Détails et cahier des charges :
 [`ACHAT-VPS-1000.md`](./ACHAT-VPS-1000.md) (section 0).
 
-Ensuite, pour les deux cas :
+Ensuite :
 1. Créez un compte sur [hetzner.com](https://www.hetzner.com).
-2. Image : **Ubuntu 24.04**. Ajoutez votre clé SSH.
-3. Notez l'adresse IP publique du serveur (appelée `<IP-VPS>` ci-dessous).
+2. Notez l'adresse IP publique du serveur (appelée `<IP-VPS>` ci-dessous).
+3. Installez Ubuntu 24.04 : automatique sur un VPS Cloud ; sur un **Server Auction**
+   (occasion), passez d'abord par l'étape 1 bis ci-dessous.
+
+### 1 bis. Installer Ubuntu sur un Server Auction (rescue system → installimage)
+
+Les serveurs d'enchères sont livrés **sans OS** : on l'installe soi-même en
+~5 minutes. Depuis la console Hetzner (Robot) :
+
+1. Onglet du serveur → **Rescue** → activez « Linux » (64 bit) → notez le mot de
+   passe affiché. Puis **Reset** → « Execute an automatic hardware reset » pour
+   redémarrer sur le rescue.
+2. Connectez-vous : `ssh root@<IP-VPS>` (mot de passe du rescue).
+3. Lancez l'installateur guidé : `installimage`
+   - Distribution : **Ubuntu 24.04 LTS**
+   - Un éditeur s'ouvre : laissez le RAID (RAID1 sur 2 SSD = sécurité par miroir),
+     réglez `HOSTNAME` si vous voulez, puis **F10** pour enregistrer et lancer.
+4. À la fin : `reboot`. Après ~1 min, reconnectez-vous : `ssh root@<IP-VPS>`
+   (le rescue est remplacé par votre Ubuntu). Vous avez l'accès root SSH.
+
+> 💡 Ajoutez votre clé SSH pour ne plus taper de mot de passe :
+> `ssh-copy-id root@<IP-VPS>` (depuis votre machine, avant ou après installimage).
 
 ## 2. Installer MediaMTX
 
