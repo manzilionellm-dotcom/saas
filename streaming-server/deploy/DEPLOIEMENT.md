@@ -86,10 +86,10 @@ Le script affiche à la fin le **mot de passe panel généré** (stocké dans
    connexions simultanées). Avec elle, tout passe par MediaMTX : la source
    n'est tirée qu'une fois et redistribuée → plusieurs profils regardent des
    chaînes différentes en même temps sans jamais saturer la source.
-4. Sur le serveur : `streamcast-update-channels`
-   → télécharge l'export du panel et recharge MediaMTX (avec retour arrière
-   automatique si la config ne passe pas). **À relancer après chaque
-   modification de chaînes** (ou via cron, voir plus bas).
+4. **Panel → « Restreamer toutes les chaînes »** (bouton vert) : pousse tout le
+   catalogue vers MediaMTX, qui recharge sa config automatiquement. Aucun SSH,
+   aucun redémarrage. **À relancer après chaque ajout/suppression de chaînes.**
+   (Équivalent en ligne de commande, pour un cron : `streamcast-update-channels`.)
 
 ### Vérification de bout en bout
 

@@ -6,6 +6,7 @@ import AddSourceForm from "./AddSourceForm";
 import ChannelBrowser from "./ChannelBrowser";
 import ProfilesPanel from "./ProfilesPanel";
 import SettingsPanel from "./SettingsPanel";
+import SyncMediamtx from "./SyncMediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,10 @@ export default async function PanelPage() {
 
             <section className="mt-10">
               <SettingsPanel initialSettings={await streamsStore.getSettings()} />
+            </section>
+
+            <section className="mt-10">
+              <SyncMediamtx />
             </section>
 
             <section className="mt-10">

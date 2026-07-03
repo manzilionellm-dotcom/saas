@@ -1,6 +1,6 @@
 import { streamsStore } from "../../../../lib/db/streams-store";
 import { isPanelAuthed, unauthorized } from "../../../../lib/panel-auth";
-import { mediamtxPath } from "../../../../lib/mediamtx";
+import { mediamtxPathsBlock } from "../../../../lib/mediamtx";
 
 export const dynamic = "force-dynamic";
 
@@ -10,23 +10,14 @@ export async function GET() {
   if (!(await isPanelAuthed())) return unauthorized();
   const channels = await streamsStore.list();
 
-  const lines = [
+  const header = [
     "# Chemins générés depuis le panel /panel — à coller sous `paths:` de mediamtx.yml.",
     "# Chaque chaîne est en mode à la demande : elle n'est tirée que si quelqu'un la regarde.",
     `# ${channels.length} chaîne(s) — lecture : http://<votre-vps>:8888/<chemin>/index.m3u8`,
     "",
-    "paths:",
-  ];
-  for (const c of channels) {
-    lines.push(`  ${mediamtxPath(c)}:`);
-    lines.push(`    source: ${JSON.stringify(c.url)}`);
-    lines.push("    sourceOnDemand: yes");
-  }
-  if (channels.length === 0) {
-    lines.push("  # (aucune chaîne dans le panel pour l'instant)");
-  }
+  ].join("\n");
 
-  return new Response(lines.join("\n") + "\n", {
+  return new Response(header + mediamtxPathsBlock(channels), {
     status: 200,
     headers: {
       "Content-Type": "text/yaml; charset=utf-8",

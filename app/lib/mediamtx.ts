@@ -31,3 +31,20 @@ export function playbackUrl(baseUrl: string | undefined, c: Channel): string {
   const base = (baseUrl ?? "").replace(/\/+$/, "");
   return base ? `${base}/${mediamtxPath(c)}/index.m3u8` : c.url;
 }
+
+// Section `paths:` de mediamtx.yml : une entrée par chaîne, en mode à la demande
+// (la source n'est tirée que si quelqu'un regarde). Utilisée par l'export
+// téléchargeable ET par la synchro « Restreamer toutes les chaînes » du panel,
+// pour qu'elles produisent exactement le même résultat.
+export function mediamtxPathsBlock(channels: Channel[]): string {
+  const lines = ["paths:"];
+  for (const c of channels) {
+    lines.push(`  ${mediamtxPath(c)}:`);
+    lines.push(`    source: ${JSON.stringify(c.url)}`);
+    lines.push("    sourceOnDemand: yes");
+  }
+  if (channels.length === 0) {
+    lines.push("  # (aucune chaîne dans le panel pour l'instant)");
+  }
+  return lines.join("\n") + "\n";
+}

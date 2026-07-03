@@ -16,8 +16,9 @@ NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
-# Seul dossier en écriture : l'app y range .data/ (chaînes, profils) et .next/cache.
-ReadWritePaths=/opt/streamcast/app
+# Dossiers en écriture : .data/ (chaînes, profils) + .next/cache de l'app, et la
+# config MediaMTX (bouton « Restreamer toutes les chaînes » du panel).
+ReadWritePaths=/opt/streamcast/app /opt/mediamtx
 
 [Install]
 WantedBy=multi-user.target
