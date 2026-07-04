@@ -436,7 +436,15 @@ class StreamsStore {
 
   async getSettings(): Promise<Settings> {
     const db = await this.load();
-    return { ...db.settings };
+    const settings = { ...db.settings };
+    // Repli sur HLS_BASE_URL (posé par install.sh) si le serveur de diffusion
+    // n'a pas été réglé dans le panel. Garantit que les chaînes sont servies via
+    // MediaMTX dès l'installation, sans divulguer l'URL source du fournisseur.
+    // Un réglage saisi dans le panel reste prioritaire.
+    if (!settings.hlsBaseUrl && process.env.HLS_BASE_URL) {
+      settings.hlsBaseUrl = process.env.HLS_BASE_URL;
+    }
+    return settings;
   }
 
   async setSettings(patch: Partial<Settings>): Promise<Settings> {

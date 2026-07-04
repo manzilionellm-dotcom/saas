@@ -22,16 +22,28 @@ export async function GET(
     streamsStore.getSettings(),
   ]);
 
-  // Si un serveur de diffusion est configuré, on sert l'URL restreamée par
-  // MediaMTX (source tirée une fois pour toute la famille) ; sinon la source.
-  const channels = source.map((c) => ({
-    id: c.id,
-    name: c.name,
-    logo: c.logo ?? null,
-    group: c.group ?? null,
-    url: playbackUrl(settings.hlsBaseUrl, c),
-    backupUrl: backupPlaybackUrl(settings.hlsBaseUrl, c),
-  }));
+  // On ne sert QUE l'URL restreamée par MediaMTX (source tirée une fois pour
+  // toute la famille). On ne renvoie jamais l'URL source du fournisseur au
+  // client : une chaîne sans URL de diffusion est simplement écartée.
+  const channels = source
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      logo: c.logo ?? null,
+      group: c.group ?? null,
+      url: playbackUrl(settings.hlsBaseUrl, c),
+      backupUrl: backupPlaybackUrl(settings.hlsBaseUrl, c),
+    }))
+    .filter((c): c is typeof c & { url: string } => c.url !== null);
+
+  // Des chaînes existent mais aucune n'est diffusable = serveur de diffusion non
+  // réglé. On le dit clairement au lieu d'afficher un lecteur vide.
+  if (source.length > 0 && channels.length === 0) {
+    return Response.json(
+      { error: "Diffusion non configurée : réglez le serveur de diffusion dans le panel." },
+      { status: 503 },
+    );
+  }
 
   return Response.json({ profile: profile.name, channels });
 }

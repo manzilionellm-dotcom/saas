@@ -22,23 +22,28 @@ export function mediamtxPath(c: Pick<Channel, "id" | "name">): string {
   return base ? `${base}-${c.id}` : c.id;
 }
 
-// URL de lecture HLS d'une chaîne.
+// URL de lecture HLS d'une chaîne, servie au navigateur des spectateurs.
 //   - avec `baseUrl` (ex. https://hls.mondomaine.com) : URL restreamée par
 //     MediaMTX → la source n'est tirée qu'une fois, redistribuée à toute la
 //     famille (papa et maman regardent en simultané sans saturer la source).
-//   - sans `baseUrl` : on retombe sur l'URL source d'origine.
-export function playbackUrl(baseUrl: string | undefined, c: Channel): string {
+//   - sans `baseUrl` : renvoie `null` — on NE divulgue JAMAIS l'URL source du
+//     fournisseur au client. Sinon le navigateur du spectateur se connecterait
+//     en direct au fournisseur, exposant son IP domicile et les identifiants
+//     IPTV (contenus dans l'URL). Fail-safe : pas de serveur de diffusion réglé
+//     = chaîne non servie, plutôt que fuite. `install.sh` configure HLS_BASE_URL
+//     automatiquement pour que ce cas ne se produise pas en production.
+export function playbackUrl(baseUrl: string | undefined, c: Channel): string | null {
   const base = (baseUrl ?? "").replace(/\/+$/, "");
-  return base ? `${base}/${mediamtxPath(c)}/index.m3u8` : c.url;
+  return base ? `${base}/${mediamtxPath(c)}/index.m3u8` : null;
 }
 
 // URL de lecture de la source de SECOURS (chemin « <chemin>-secours »), ou null
-// si la chaîne n'a pas de source de secours. Le lecteur bascule dessus si la
-// source principale échoue.
+// si la chaîne n'a pas de secours OU si aucun serveur de diffusion n'est réglé.
+// Même règle que playbackUrl : jamais l'URL brute du fournisseur vers le client.
 export function backupPlaybackUrl(baseUrl: string | undefined, c: Channel): string | null {
   if (!c.backupUrl) return null;
   const base = (baseUrl ?? "").replace(/\/+$/, "");
-  return base ? `${base}/${mediamtxPath(c)}-secours/index.m3u8` : c.backupUrl;
+  return base ? `${base}/${mediamtxPath(c)}-secours/index.m3u8` : null;
 }
 
 // Commande ffmpeg qui tire une source et la republie vers MediaMTX (RTSP interne).

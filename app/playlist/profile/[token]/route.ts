@@ -23,11 +23,14 @@ export async function GET(
   const settings = await streamsStore.getSettings();
   const epg = !!settings.epgUrl;
 
-  // Sert les chaînes via MediaMTX si un serveur de diffusion est configuré.
+  // Sert les chaînes via MediaMTX. On n'inclut jamais l'URL source du
+  // fournisseur dans la playlist : une chaîne sans URL de diffusion est écartée.
   const source =
     profile.favorites.length > 0
       ? await streamsStore.getMany(profile.favorites) // ses favoris…
       : await streamsStore.list(); // …sinon tout le catalogue.
-  const channels = source.map((c) => ({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }));
+  const channels = source
+    .map((c) => ({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }))
+    .filter((c): c is typeof c & { url: string } => c.url !== null);
   return m3uResponse(channels, { epg });
 }

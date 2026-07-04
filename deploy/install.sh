@@ -76,7 +76,23 @@ cd "$APP_DIR"
 "$NODE_BIN" node_modules/next/dist/bin/next build
 
 log "Installation du service systemd streamcast-panel"
-sed -e "s|__APP_DIR__|$APP_DIR|g" -e "s|__NODE_BIN__|$NODE_BIN|g" \
+# Serveur de diffusion : le panel sert aux spectateurs http://<hote>:8888/<chaine>/index.m3u8
+# (flux restreame par MediaMTX), jamais l'URL source du fournisseur. On le fixe
+# automatiquement ici pour que le fail-safe cote code ne bloque pas les chaines.
+# Surcharge possible : HLS_BASE_URL=https://hls.mondomaine.com bash install.sh
+if [ -z "${HLS_BASE_URL:-}" ]; then
+  HLS_HOST="${HLS_HOST:-$(ip route get 1.1.1.1 2>/dev/null | grep -oP 'src \K[0-9.]+' | head -1)}"
+  [ -z "$HLS_HOST" ] && HLS_HOST="$(hostname -I 2>/dev/null | awk '{print $1}')"
+  [ -n "$HLS_HOST" ] && HLS_BASE_URL="http://$HLS_HOST:8888"
+fi
+if [ -n "${HLS_BASE_URL:-}" ]; then
+  HLS_ENV="Environment=HLS_BASE_URL=$HLS_BASE_URL"
+  log "Serveur de diffusion : $HLS_BASE_URL"
+else
+  HLS_ENV=""
+  warn "IP du serveur non detectee : reglez le serveur de diffusion dans le panel (sinon les chaines ne seront pas servies)."
+fi
+sed -e "s|__APP_DIR__|$APP_DIR|g" -e "s|__NODE_BIN__|$NODE_BIN|g" -e "s|__HLS_ENV__|$HLS_ENV|g" \
   "$SCRIPT_DIR/streamcast-panel.service" > /etc/systemd/system/streamcast-panel.service
 systemctl daemon-reload
 systemctl enable --now streamcast-panel

@@ -17,10 +17,12 @@ export async function GET(
   if (id === "all") {
     const channels = await streamsStore.list();
     const settings = await streamsStore.getSettings();
-    // Chaînes du panel : servies via MediaMTX si un serveur de diffusion est réglé.
-    const entries = channels.map((c) =>
-      channelToEntry({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }),
-    );
+    // Chaînes du panel : servies via MediaMTX. Une chaîne sans URL de diffusion
+    // est écartée — on ne met jamais l'URL source du fournisseur dans le M3U.
+    const entries = channels
+      .map((c) => ({ ...c, url: playbackUrl(settings.hlsBaseUrl, c) }))
+      .filter((c): c is typeof c & { url: string } => c.url !== null)
+      .map((c) => channelToEntry(c));
     for (const s of streams) {
       if (!isConfigured(s)) continue;
       const attrs: Record<string, string> = { "tvg-id": s.id, "tvg-name": s.name };
@@ -43,7 +45,14 @@ export async function GET(
   const channel = await streamsStore.get(id);
   if (channel) {
     const settings = await streamsStore.getSettings();
-    return m3uResponse([{ ...channel, url: playbackUrl(settings.hlsBaseUrl, channel) }]);
+    const url = playbackUrl(settings.hlsBaseUrl, channel);
+    if (!url) {
+      return new Response(
+        `#EXTM3U\n# Diffusion non configurée : réglez le serveur de diffusion dans /panel.\n`,
+        { status: 503, headers: M3U_HEADERS },
+      );
+    }
+    return m3uResponse([{ ...channel, url }]);
   }
 
   // Flux hérités (app/lib/streams.ts).

@@ -10,6 +10,9 @@ ExecStart=__NODE_BIN__ __APP_DIR__/node_modules/next/dist/bin/next start --port 
 Restart=always
 RestartSec=3
 Environment=NODE_ENV=production
+# Serveur de diffusion MediaMTX. Le panel ne sert QUE cette URL restreamee aux
+# spectateurs (jamais l'URL source du fournisseur). Renseigne par install.sh.
+__HLS_ENV__
 # Evite qu'un build a moitie fini fasse boucler le service trop vite
 StartLimitIntervalSec=60
 StartLimitBurst=10
