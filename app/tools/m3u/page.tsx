@@ -16,15 +16,46 @@ export default function M3UToolPage() {
   const [labelVariants, setLabelVariants] = useState(true);
   const [copies, setCopies] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleClone() {
+  async function handleClone() {
     setError(null);
-    if (!source.trim().toUpperCase().includes("#EXTM3U")) {
+    const input = source.trim();
+
+    // Si on colle une URL (ex. lien get.php d'abonnement), on la télécharge
+    // côté serveur, puis on clone le contenu récupéré.
+    let m3uText = input;
+    if (/^https?:\/\//i.test(input)) {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/m3u/fetch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: input }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data?.error ?? "Échec du téléchargement de la playlist.");
+          setCopies([]);
+          return;
+        }
+        m3uText = data.content as string;
+        setSource(m3uText); // affiche la playlist récupérée dans le champ
+      } catch {
+        setError("Erreur réseau pendant le téléchargement de la playlist.");
+        setCopies([]);
+        return;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (!m3uText.trim().toUpperCase().includes("#EXTM3U")) {
       setError("Le texte ne ressemble pas à un M3U (ligne #EXTM3U manquante).");
       setCopies([]);
       return;
     }
-    setCopies(cloneM3U(source, count, { labelVariants }));
+    setCopies(cloneM3U(m3uText, count, { labelVariants }));
   }
 
   function download(text: string, index: number) {
@@ -51,8 +82,9 @@ export default function M3UToolPage() {
           Cloneur de playlist M3U
         </h1>
         <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          Collez une playlist M3U, choisissez le nombre de copies, et récupérez
-          les variantes.
+          Collez le <strong>contenu</strong> d&apos;une playlist M3U <em>ou</em> son{" "}
+          <strong>URL</strong> (lien <code>get.php…</code>) — elle sera téléchargée
+          automatiquement. Choisissez le nombre de copies et récupérez les variantes.
         </p>
         <p className="mt-2 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
           ⚠️ À utiliser uniquement avec du contenu que vous possédez ou dont
@@ -60,7 +92,7 @@ export default function M3UToolPage() {
         </p>
 
         <label className="mt-6 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Playlist M3U source
+          Playlist M3U source (contenu ou URL)
         </label>
         <textarea
           value={source}
@@ -104,9 +136,10 @@ export default function M3UToolPage() {
           <button
             type="button"
             onClick={handleClone}
-            className="ml-auto rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+            disabled={loading}
+            className="ml-auto rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Cloner
+            {loading ? "Téléchargement…" : "Cloner"}
           </button>
         </div>
 
