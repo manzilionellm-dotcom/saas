@@ -11,7 +11,7 @@ export default function Home() {
             Suite logicielle
           </p>
           <h1 className="text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">
-            30 outils SaaS pour faire grandir votre entreprise
+            {products.length} outils SaaS pour faire grandir votre entreprise
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
             Ventes, marketing, support, développement et plus encore. Choisissez
@@ -32,19 +32,29 @@ export default function Home() {
         </div>
 
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <li key={product.slug}>
-              <Link
-                href={`/products/${product.slug}`}
-                className="group flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-6 transition-all hover:border-indigo-400 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-500"
-              >
+          {products.map((product) => {
+            const cardBody = (
+              <>
                 <div className="mb-4 flex items-start justify-between">
                   <span className="text-3xl" aria-hidden>
                     {product.icon}
                   </span>
-                  <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                    {product.category}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {product.comingSoon ? (
+                      <span className="rounded-full bg-zinc-200 px-3 py-1 text-xs font-semibold text-zinc-500 dark:bg-zinc-700 dark:text-zinc-300">
+                        Bientôt
+                      </span>
+                    ) : (
+                      product.featured && (
+                        <span className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
+                          Nouveau
+                        </span>
+                      )
+                    )}
+                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                      {product.category}
+                    </span>
+                  </div>
                 </div>
                 <h3 className="text-lg font-semibold text-zinc-900 group-hover:text-indigo-600 dark:text-zinc-50 dark:group-hover:text-indigo-400">
                   {product.name}
@@ -63,14 +73,38 @@ export default function Home() {
                     / mois
                   </span>
                 </div>
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+
+            return (
+              <li key={product.slug}>
+                {product.comingSoon ? (
+                  <div
+                    aria-disabled
+                    className="flex h-full cursor-not-allowed flex-col rounded-2xl border border-dashed border-zinc-300 bg-zinc-100 p-6 opacity-60 grayscale dark:border-zinc-700 dark:bg-zinc-900/50"
+                  >
+                    {cardBody}
+                  </div>
+                ) : (
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className={`group flex h-full flex-col rounded-2xl border bg-white p-6 transition-all hover:shadow-lg dark:bg-zinc-900 ${
+                      product.featured
+                        ? "border-indigo-500 ring-1 ring-indigo-500/30"
+                        : "border-zinc-200 hover:border-indigo-400 dark:border-zinc-800 dark:hover:border-indigo-500"
+                    }`}
+                  >
+                    {cardBody}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </main>
 
       <footer className="border-t border-zinc-200 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-        Démo SaaS — 30 produits
+        Démo SaaS — {products.length} produits
       </footer>
     </div>
   );
