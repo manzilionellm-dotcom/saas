@@ -1,0 +1,33 @@
+# =============================================================================
+# StreamCast — reverse proxy HTTPS (Caddy)
+# =============================================================================
+# Les certificats Let's Encrypt sont obtenus et renouvelés automatiquement,
+# à condition que les deux domaines pointent (enregistrement A) vers ce serveur.
+#
+# Pourquoi tout passe par HTTPS :
+#   - le cookie du panel est `secure` en production → le panel exige HTTPS ;
+#   - le lecteur web servi en HTTPS ne peut PAS lire un flux http://…:8888
+#     (blocage « contenu mixte » des navigateurs) → le HLS doit être en HTTPS.
+# Le port 8888 de MediaMTX reste donc fermé de l'extérieur : Caddy proxifie.
+#
+# Les marqueurs __…__ sont remplacés par install.sh.
+# =============================================================================
+
+{
+	email __ACME_EMAIL__
+}
+
+# --- Application (panel, lecteur web, playlists, EPG) ------------------------
+__DOMAIN_PANEL__ {
+	reverse_proxy 127.0.0.1:3000
+	encode gzip
+}
+
+# --- Flux HLS (MediaMTX) ------------------------------------------------------
+__DOMAIN_HLS__ {
+	reverse_proxy 127.0.0.1:8888 {
+		# Flux vidéo : on stream tel quel, sans tampon.
+		flush_interval -1
+	}
+	# Pas de compression : les segments TS sont déjà compressés (vidéo).
+}

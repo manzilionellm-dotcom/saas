@@ -1,0 +1,22 @@
+[Unit]
+Description=MediaMTX (StreamCast Server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/mediamtx/mediamtx /opt/mediamtx/mediamtx.yml
+WorkingDirectory=/opt/mediamtx
+Restart=always
+RestartSec=3
+User=streamcast
+Group=streamcast
+# 200 spectateurs HLS = beaucoup de connexions simultanées.
+LimitNOFILE=65536
+# Durcissement : MediaMTX n'a besoin d'écrire nulle part.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

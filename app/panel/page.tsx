@@ -1,0 +1,92 @@
+import Link from "next/link";
+import { streamsStore } from "../lib/db/streams-store";
+import { isPanelAuthed, panelPassword } from "../lib/panel-auth";
+import LoginForm from "./LoginForm";
+import AddSourceForm from "./AddSourceForm";
+import ChannelBrowser from "./ChannelBrowser";
+import ProfilesPanel from "./ProfilesPanel";
+import SettingsPanel from "./SettingsPanel";
+import SyncMediamtx from "./SyncMediamtx";
+import BackupPanel from "./BackupPanel";
+import PlaylistsReady from "./PlaylistsReady";
+
+export const dynamic = "force-dynamic";
+
+export default async function PanelPage() {
+  const authed = await isPanelAuthed();
+  const settings = authed ? await streamsStore.getSettings() : {};
+
+  return (
+    <div className="min-h-full bg-zinc-50 font-sans dark:bg-zinc-950">
+      <main className="mx-auto max-w-5xl px-6 py-12">
+        <Link href="/" className="text-sm text-indigo-600 hover:underline dark:text-indigo-400">
+          ← Catalogue
+        </Link>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          📡 StreamCast — Panel
+        </h1>
+        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+          Vos chaînes, vos profils famille et le guide des programmes — tout au même endroit.
+        </p>
+
+        {!authed ? (
+          <div className="mt-8 max-w-sm">
+            <LoginForm />
+          </div>
+        ) : (
+          <>
+            {!panelPassword() && (
+              <p className="mt-6 rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                ⚠️ Aucun mot de passe configuré : le panel est ouvert. Définissez{" "}
+                <code>APP_PASSWORD</code> dans <code>.env.local</code> avant toute mise en ligne.
+              </p>
+            )}
+            <p className="mt-4 rounded-lg bg-zinc-100 px-4 py-2 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
+              ⚠️ N&apos;ajoutez que des sources que vous possédez ou que vous êtes autorisé à
+              utiliser/redistribuer.
+            </p>
+
+            <section className="mt-6">
+              <PlaylistsReady restreamOn={!!settings.hlsBaseUrl} />
+            </section>
+
+            <section className="mt-8">
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                Ajouter une source
+              </h2>
+              <div className="mt-3">
+                <AddSourceForm />
+              </div>
+            </section>
+
+            <section className="mt-10">
+              <ProfilesPanel initialProfiles={await streamsStore.listProfiles()} />
+            </section>
+
+            <section className="mt-10">
+              <SettingsPanel initialSettings={settings} />
+            </section>
+
+            <section className="mt-10">
+              <SyncMediamtx />
+            </section>
+
+            <section className="mt-10">
+              <BackupPanel />
+            </section>
+
+            <section className="mt-10">
+              <ChannelBrowser
+                grandTotal={await streamsStore.count()}
+                groups={await streamsStore.groups()}
+                origins={await streamsStore.origins()}
+                profiles={await streamsStore.listProfiles()}
+                bouquets={await streamsStore.listBouquets()}
+              />
+            </section>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}

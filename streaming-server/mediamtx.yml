@@ -1,0 +1,79 @@
+# =============================================================================
+# StreamCast Server — configuration MediaMTX (mode « à la demande »)
+# =============================================================================
+# Principe : chaque chaîne déclarée sous `paths:` n'est tirée depuis sa source
+# QUE lorsqu'un spectateur l'ouvre, et s'arrête quand le dernier s'en va.
+# C'est ce qui permet un très grand catalogue (15 000 chaînes) sur un petit
+# VPS : seules les chaînes regardées consomment de la bande passante.
+#
+# ⚠️ LÉGAL : ne déclarez ici que des flux que vous possédez ou que vous êtes
+# explicitement autorisé à rediffuser (ex. accord écrit avec la chaîne).
+#
+# Installation : voir README.md dans ce dossier.
+# =============================================================================
+
+# --- Journaux ----------------------------------------------------------------
+logLevel: info
+logDestinations: [stdout]
+
+# --- Stabilité (tampons & délais tolérants aux sources capricieuses) ----------
+# Délais de lecture/écriture plus larges : une source qui hoquette quelques
+# secondes n'est pas coupée aussitôt.
+readTimeout: 30s
+writeTimeout: 30s
+# File d'attente d'écriture par lecteur (puissance de 2) : encaisse un pic de
+# spectateurs ou un réseau lent sans lâcher les connexions.
+writeQueueSize: 1024
+
+# --- API de contrôle (locale uniquement, pour superviser le serveur) ---------
+api: yes
+apiAddress: 127.0.0.1:9997
+
+# --- Métriques (locales, optionnelles) ---------------------------------------
+metrics: no
+
+# --- Protocoles de sortie -----------------------------------------------------
+# HLS : le format que lisent VLC, TiviMate, navigateurs… C'est la sortie
+# principale de StreamCast. URL de lecture :
+#   http://<ip-du-vps>:8888/<chemin>/index.m3u8
+hls: yes
+hlsAddress: :8888
+hlsVariant: mpegts
+# Plus de segments en réserve = tampon plus profond côté lecteur : une coupure
+# réseau de quelques secondes est absorbée sans gel de l'image (au prix d'un
+# léger délai de démarrage, sans importance pour de la TV).
+hlsSegmentCount: 10
+hlsSegmentDuration: 1s
+hlsAllowOrigin: "*"
+
+# RTSP : ACTIVÉ mais en local uniquement (127.0.0.1:8554). Il ne sert PAS aux
+# spectateurs — c'est la cible interne où ffmpeg republie chaque chaîne qu'il
+# tire (voir la commande runOnDemand générée par le panel). Le pare-feu n'ouvre
+# que 8888, donc 8554 reste inaccessible de l'extérieur.
+rtsp: yes
+rtspAddress: 127.0.0.1:8554
+rtmp: no
+webrtc: no
+srt: no
+
+# --- Valeurs par défaut appliquées à tous les chemins -------------------------
+pathDefaults:
+  # Temps maximum pour que ffmpeg démarre et produise du flux quand on zappe
+  # sur une chaîne (tirage + connexion à la source peut prendre quelques secondes).
+  runOnDemandStartTimeout: 20s
+  runOnDemandCloseAfter: 30s
+
+# --- Chaînes ------------------------------------------------------------------
+# Deux façons de remplir cette section :
+#   1. Automatique : connectez-vous au panel de l'app, puis téléchargez
+#      /api/panel/export/mediamtx — le fichier contient tous vos `paths:`
+#      prêts à coller ici (remplacez la section ci-dessous).
+#   2. Manuelle : ajoutez chaque chaîne sur le modèle de l'exemple.
+paths:
+  # Rempli automatiquement par le panel (bouton « Restreamer toutes les chaînes »
+  # ou export /api/panel/export/mediamtx). Chaque chaîne ressemble à :
+  # rtnb-xxxx:
+  #   runOnDemand: "ffmpeg -user_agent \"VLC/3.0.20 LibVLC/3.0.20\" -i \"<source>\" -c copy -f rtsp rtsp://localhost:8554/$MTX_PATH"
+  #   runOnDemandRestart: yes
+  #   runOnDemandCloseAfter: 30s
+  # (ffmpeg doit être installé sur le serveur : apt install -y ffmpeg)

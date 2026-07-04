@@ -1,0 +1,24 @@
+[Unit]
+Description=StreamCast — application Next.js (panel + lecteur + playlists)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/streamcast/app
+# NODE_ENV=production est posé par `next start` ; le port reste local (Caddy proxifie).
+ExecStart=/usr/bin/npx next start --port 3000 --hostname 127.0.0.1
+EnvironmentFile=/etc/streamcast/streamcast.env
+Restart=always
+RestartSec=3
+User=streamcast
+Group=streamcast
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+# Dossiers en écriture : .data/ (chaînes, profils) + .next/cache de l'app, et la
+# config MediaMTX (bouton « Restreamer toutes les chaînes » du panel).
+ReadWritePaths=/opt/streamcast/app /opt/mediamtx
+
+[Install]
+WantedBy=multi-user.target
