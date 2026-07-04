@@ -1,9 +1,66 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { products, categories } from "./lib/products";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
+const itemListJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Catalogue SaaS Suite",
+  numberOfItems: products.length,
+  itemListElement: products.slice(0, 12).map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: p.name,
+    url: `https://saas-suite.example.com/products/${p.slug}`,
+  })),
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Combien d'outils propose la suite SaaS ?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `La suite propose ${products.length} outils SaaS couvrant les ventes, le marketing, le support, le développement, la finance et plus.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Qu'est-ce que Versailles ?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Versailles est l'agent IA qui pilote tous vos sites en SEO, GEO et AEO, exécute les tâches à votre place et préside vos réunions d'équipe IA.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Le GEO et l'AEO, qu'est-ce que c'est ?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Le GEO (Generative Engine Optimization) optimise votre présence dans les IA génératives comme ChatGPT, Perplexity et Gemini. L'AEO (Answer Engine Optimization) optimise pour les moteurs de réponse.",
+      },
+    },
+  ],
+};
 
 export default function Home() {
   return (
     <div className="min-h-full bg-zinc-50 font-sans dark:bg-zinc-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* En-tête / héro */}
       <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mx-auto max-w-6xl px-6 py-16 text-center">
@@ -17,7 +74,19 @@ export default function Home() {
             Ventes, marketing, support, développement et plus encore. Choisissez
             les outils dont vous avez besoin, payez à l&apos;usage.
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/versailles"
+              className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+            >
+              👑 Poste de commandement Versailles
+            </Link>
+            <Link
+              href="/meeting"
+              className="inline-flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+              🗣️ Réunion d&apos;équipe IA
+            </Link>
             <Link
               href="/tools/m3u"
               className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-5 py-2 text-sm font-medium text-zinc-700 transition-colors hover:border-indigo-400 hover:text-indigo-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300"
