@@ -1,40 +1,36 @@
 import { NextResponse } from "next/server";
 
-/**
- * Enterprise Egress Gateway — gestion de trafic et résilience.
- *
- * Chaque valeur est pilotée par une variable d'environnement afin de pouvoir
- * ajuster le comportement par environnement (preview, production) sans
- * modifier le code :
- *
- * - `EGRESS_GATEWAY_ACTIVE`            : "false" pour couper tout le trafic sortant (circuit breaker global)
- * - `EGRESS_MAX_CONCURRENT_SESSIONS`   : limite de sessions concurrentes vers le fournisseur amont
- * - `EGRESS_ENFORCE_PROXY_ISOLATION`   : "false" pour désactiver le routage obligatoire via la passerelle
- * - `EGRESS_TARGET_REGION`             : code région de l'agent de transport sortant
- * - `EGRESS_PROXY_ENDPOINT`            : point de terminaison du proxy réseau (http:// ou socks5://)
- */
-export const EGRESS_GATEWAY_CONFIG = {
-  gatewayActive: process.env.EGRESS_GATEWAY_ACTIVE !== "false",
-  maxConcurrentSessions: parsePositiveInt(
-    process.env.EGRESS_MAX_CONCURRENT_SESSIONS,
-    1,
-  ),
-  enforceProxyIsolation: process.env.EGRESS_ENFORCE_PROXY_ISOLATION !== "false",
-  targetRegion: process.env.EGRESS_TARGET_REGION ?? "CH",
-  proxyEndpoint: process.env.EGRESS_PROXY_ENDPOINT ?? "",
-} as const;
+// CONFIGURATION DE GESTION DE TRAFIC ET DE RÉSILIENCE
+const EGRESS_GATEWAY_CONFIG = {
+  // Activer ou désactiver complètement le trafic sortant (Circuit Breaker global)
+  GATEWAY_ACTIVE: true,
 
-function parsePositiveInt(value: string | undefined, fallback: number): number {
-  const parsed = Number.parseInt(value ?? "", 10);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
+  // Limite stricte de sessions concurrentes simultanées vers le fournisseur amont
+  MAX_CONCURRENT_SESSIONS: 1,
+
+  // Routage obligatoire via passerelle proxy pour l'isolation réseau
+  ENFORCE_PROXY_ISOLATION: true,
+
+  // Code région pour l'agent de transport sortant
+  TARGET_REGION: "CH",
+
+  // Point de terminaison du proxy réseau (HTTP/SOCKS5)
+  PROXY_ENDPOINT: "socks5://votre-proxy-prive-ici:port",
+} as const;
 
 /**
  * Point d'entrée exigé par Next.js : `proxy.ts` doit exporter une fonction
  * (successeur de `middleware.ts`), exécutée avant le rendu des routes.
+ *
+ * NOTE : ce fichier est un middleware Next.js — il s'exécute sur le chemin des
+ * requêtes ENTRANTES. Il applique donc le circuit breaker global et l'en-tête
+ * de région, mais ne peut pas router le trafic SORTANT vers le fournisseur
+ * amont. `MAX_CONCURRENT_SESSIONS`, `ENFORCE_PROXY_ISOLATION` et
+ * `PROXY_ENDPOINT` sont conservés comme configuration de référence ; leur
+ * application effective au flux sortant se ferait côté client HTTP amont.
  */
 export function proxy(): NextResponse {
-  if (!EGRESS_GATEWAY_CONFIG.gatewayActive) {
+  if (!EGRESS_GATEWAY_CONFIG.GATEWAY_ACTIVE) {
     return NextResponse.json(
       { error: "Service temporairement indisponible : passerelle de sortie désactivée." },
       { status: 503, headers: { "Retry-After": "60" } },
@@ -42,7 +38,7 @@ export function proxy(): NextResponse {
   }
 
   const response = NextResponse.next();
-  response.headers.set("x-egress-region", EGRESS_GATEWAY_CONFIG.targetRegion);
+  response.headers.set("x-egress-region", EGRESS_GATEWAY_CONFIG.TARGET_REGION);
   return response;
 }
 
