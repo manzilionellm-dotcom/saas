@@ -8,11 +8,13 @@ import ProfilesPanel from "./ProfilesPanel";
 import SettingsPanel from "./SettingsPanel";
 import SyncMediamtx from "./SyncMediamtx";
 import BackupPanel from "./BackupPanel";
+import PlaylistsReady from "./PlaylistsReady";
 
 export const dynamic = "force-dynamic";
 
 export default async function PanelPage() {
   const authed = await isPanelAuthed();
+  const settings = authed ? await streamsStore.getSettings() : {};
 
   return (
     <div className="min-h-full bg-zinc-50 font-sans dark:bg-zinc-950">
@@ -44,6 +46,10 @@ export default async function PanelPage() {
               utiliser/redistribuer.
             </p>
 
+            <section className="mt-6">
+              <PlaylistsReady restreamOn={!!settings.hlsBaseUrl} />
+            </section>
+
             <section className="mt-8">
               <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
                 Ajouter une source
@@ -58,7 +64,7 @@ export default async function PanelPage() {
             </section>
 
             <section className="mt-10">
-              <SettingsPanel initialSettings={await streamsStore.getSettings()} />
+              <SettingsPanel initialSettings={settings} />
             </section>
 
             <section className="mt-10">
