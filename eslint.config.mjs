@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scripts Node de tooling (génération de chaînes de test, test de concurrence).
+    "scripts/**",
   ]),
 ]);
 
