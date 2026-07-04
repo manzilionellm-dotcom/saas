@@ -48,6 +48,21 @@ def main() -> None:
         changed = True
         print("api: yes active dans la config")
 
+    # 'sourceOnDemand' sans 'source' (= publisher) est une erreur FATALE pour
+    # mediamtx recent : le service refuse de demarrer. On purge ces orphelins.
+    cleaned = 0
+    candidates = [conf.get("pathDefaults")] + list((conf.get("paths") or {}).values())
+    for path_conf in candidates:
+        if not isinstance(path_conf, dict):
+            continue
+        source = path_conf.get("source", "publisher")
+        if source in ("publisher", None, "") and "sourceOnDemand" in path_conf:
+            path_conf.pop("sourceOnDemand")
+            cleaned += 1
+            changed = True
+    if cleaned:
+        print(f"{cleaned} 'sourceOnDemand' orphelin(s) supprime(s) (paths sans source)")
+
     converted = []
     paths = conf.get("paths") or {}
     for name, path_conf in paths.items():
