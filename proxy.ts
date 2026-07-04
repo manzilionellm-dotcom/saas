@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 // CONFIGURATION DE GESTION DE TRAFIC ET DE RÉSILIENCE
 export const EGRESS_GATEWAY_CONFIG = {
   // Activer ou désactiver complètement le trafic sortant (Circuit Breaker global)
@@ -15,3 +17,11 @@ export const EGRESS_GATEWAY_CONFIG = {
   // Point de terminaison du proxy réseau (HTTP/SOCKS5)
   PROXY_ENDPOINT: "socks5://votre-proxy-prive-ici:port",
 };
+
+// Next.js exige que proxy.ts exporte une fonction (remplaçant de middleware.ts)
+export default function proxy() {
+  if (!EGRESS_GATEWAY_CONFIG.GATEWAY_ACTIVE) {
+    return new NextResponse("Egress gateway disabled", { status: 503 });
+  }
+  return NextResponse.next();
+}
