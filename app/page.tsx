@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { switchProfile } from "./lib/actions";
 import {
@@ -45,24 +46,32 @@ export default async function Home() {
               Profil actif : {profile.emoji} {profile.label} — {profile.tagline}
             </p>
           </div>
-          <form action={switchProfile} className="flex gap-2">
-            {Object.values(PROFILES).map((p) => (
-              <button
-                key={p.id}
-                type="submit"
-                name="profile"
-                value={p.id}
-                aria-pressed={p.id === activeId}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  p.id === activeId
-                    ? "bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900"
-                    : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-                }`}
-              >
-                {p.emoji} {p.label}
-              </button>
-            ))}
-          </form>
+          <div className="flex flex-wrap items-center gap-3">
+            <form action={switchProfile} className="flex gap-2">
+              {Object.values(PROFILES).map((p) => (
+                <button
+                  key={p.id}
+                  type="submit"
+                  name="profile"
+                  value={p.id}
+                  aria-pressed={p.id === activeId}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    p.id === activeId
+                      ? "bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900"
+                      : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                  }`}
+                >
+                  {p.emoji} {p.label}
+                </button>
+              ))}
+            </form>
+            <Link
+              href="/restream"
+              className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+            >
+              📡 Restream
+            </Link>
+          </div>
         </header>
 
         {favorites.length > 0 && (
