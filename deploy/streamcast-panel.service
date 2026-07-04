@@ -1,0 +1,18 @@
+[Unit]
+Description=StreamCast panel (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__APP_DIR__
+ExecStart=__NODE_BIN__ __APP_DIR__/node_modules/next/dist/bin/next start --port 3000 --hostname 0.0.0.0
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+# Evite qu'un build a moitie fini fasse boucler le service trop vite
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target

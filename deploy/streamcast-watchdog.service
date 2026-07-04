@@ -1,0 +1,6 @@
+[Unit]
+Description=StreamCast watchdog (pause les sources IPTV en erreur 456 pour eviter le ban)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/streamcast-watchdog.sh
