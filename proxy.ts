@@ -11,7 +11,16 @@ import { NextResponse } from "next/server";
  * - `EGRESS_MAX_CONCURRENT_SESSIONS`   : limite de sessions concurrentes vers le fournisseur amont
  * - `EGRESS_ENFORCE_PROXY_ISOLATION`   : "false" pour désactiver le routage obligatoire via la passerelle
  * - `EGRESS_TARGET_REGION`             : code région de l'agent de transport sortant
- * - `EGRESS_PROXY_ENDPOINT`            : point de terminaison du proxy réseau (http:// ou socks5://)
+ * - `EGRESS_PROXY_ENDPOINT`            : point de terminaison du proxy réseau (http://, https:// ou socks5://)
+ *
+ * Ce fichier ne porte que la POLITIQUE (les valeurs) et le circuit breaker de
+ * périphérie. L'APPLICATION réelle (limite de concurrence, isolation réseau,
+ * routage des appels du SDK vers le fournisseur amont) vit dans
+ * `app/lib/egress.ts`, car la fonction `proxy` s'exécute en edge runtime et ne
+ * peut pas router les requêtes sortantes du SDK.
+ *
+ * Le point de terminaison proxy n'est jamais codé en dur : il est fourni par
+ * l'environnement de déploiement (ex. `socks5://user:pass@hote-prive:1080`).
  */
 export const EGRESS_GATEWAY_CONFIG = {
   gatewayActive: process.env.EGRESS_GATEWAY_ACTIVE !== "false",
