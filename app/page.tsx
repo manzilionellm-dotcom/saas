@@ -76,6 +76,12 @@ export default function Home() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
+              href="/studio"
+              className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              🧠 Viral AI OS — Studio
+            </Link>
+            <Link
               href="/versailles"
               className="inline-flex items-center gap-2 rounded-full bg-amber-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700"
             >
