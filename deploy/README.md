@@ -25,7 +25,8 @@ sudo APP_DIR=/chemin/vers/le/panel bash deploy/install.sh
 |---|---|
 | Service `streamcast-panel` | Le panel Next.js démarre au boot, redémarre s'il plante. Plus jamais de `next start` à la main. |
 | Conversion mediamtx | Chaque `source: http…` devient un tirage ffmpeg déguisé en VLC (`runOnDemand`), ce qui contourne les blocages de User-Agent (456/403). API mediamtx activée. |
-| Watchdog (timer 1 min) | Une chaîne qui accumule ≥ 10 erreurs 456 en 5 min est mise en pause 15 min (anti-ban), son état est écrit dans `/var/lib/streamcast/status/<chaine>`, puis elle est réessayée automatiquement. |
+| Service `mediamtx` | Si mediamtx tournait à la main (screen/nohup), il est migré sous systemd automatiquement : logs dans le journal, redémarrage auto, config appliquée. |
+| Watchdog (timer 1 min) | Une chaîne qui accumule ≥ 10 échecs de source en 5 min (erreur 456 ou ffmpeg qui boucle) est mise en pause 15 min (anti-ban), son état est écrit dans `/var/lib/streamcast/status/<chaine>`, puis elle est réessayée automatiquement. |
 
 ## Diagnostic d'une source qui refuse
 

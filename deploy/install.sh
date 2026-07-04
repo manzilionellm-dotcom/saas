@@ -86,7 +86,31 @@ if [ -n "$MTX_CONF" ]; then
     systemctl restart mediamtx
     log "mediamtx redemarre"
   else
-    warn "mediamtx ne tourne pas sous systemd : redemarrez-le manuellement pour appliquer la config."
+    log "mediamtx ne tourne pas sous systemd : migration automatique"
+    # retrouver le binaire : via le processus en cours, sinon emplacements habituels
+    MTX_PID="$(pgrep -x mediamtx 2>/dev/null | head -1 || true)"
+    MTX_BIN=""
+    [ -n "$MTX_PID" ] && MTX_BIN="$(readlink -f "/proc/$MTX_PID/exe" 2>/dev/null || true)"
+    if [ -z "$MTX_BIN" ]; then
+      for b in /usr/local/bin/mediamtx /usr/bin/mediamtx /opt/mediamtx/mediamtx; do
+        [ -x "$b" ] && { MTX_BIN="$b"; break; }
+      done
+    fi
+    if [ -n "$MTX_BIN" ]; then
+      sed -e "s|__MTX_BIN__|$MTX_BIN|g" -e "s|__MTX_CONF__|$MTX_CONF|g" \
+        "$SCRIPT_DIR/mediamtx.service" > /etc/systemd/system/mediamtx.service
+      systemctl daemon-reload
+      # arreter l'ancienne instance (screen/nohup/manuelle) avant de lancer le service
+      pkill -x mediamtx 2>/dev/null || true
+      sleep 2
+      pkill -9 -x mediamtx 2>/dev/null || true
+      systemctl enable --now mediamtx
+      log "mediamtx migre sous systemd (binaire : $MTX_BIN) et redemarre avec la nouvelle config"
+    else
+      warn "Binaire mediamtx introuvable : redemarrez mediamtx manuellement pour appliquer la config."
+      warn "Puis creez le service : sed -e 's|__MTX_BIN__|/chemin/mediamtx|' -e 's|__MTX_CONF__|$MTX_CONF|' \\"
+      warn "  $SCRIPT_DIR/mediamtx.service > /etc/systemd/system/mediamtx.service && systemctl enable --now mediamtx"
+    fi
   fi
 else
   warn "mediamtx.yml introuvable aux emplacements habituels."

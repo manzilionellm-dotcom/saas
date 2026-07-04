@@ -1,0 +1,14 @@
+[Unit]
+Description=mediamtx (restream StreamCast)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=__MTX_BIN__ __MTX_CONF__
+Restart=always
+RestartSec=3
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target

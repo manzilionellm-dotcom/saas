@@ -50,13 +50,16 @@ for tsfile in "$STATE_DIR"/*.ts; do
   fi
 done
 
-# --- 2. Chercher les paths qui accumulent des 456 dans la fenetre -----------
-# Format des logs mediamtx : ... ERR [path xxx] [HLS source] bad status code: 456
+# --- 2. Chercher les paths qui echouent en boucle dans la fenetre -----------
+# Deux formats de logs mediamtx selon le type de source :
+#   source HLS directe : ERR [path xxx] [HLS source] bad status code: 456
+#   tirage ffmpeg      : INF [path xxx] runOnDemand command exited: command exited with code 1
+# ("stopped" = arret normal quand le spectateur part, on ne le compte pas)
 logs="$(journalctl -u "$MTX_UNIT" --since "-${WINDOW_MIN} min" --no-pager -o cat 2>/dev/null || true)"
 [ -n "$logs" ] || exit 0
 
 echo "$logs" \
-  | grep -F 'bad status code: 456' \
+  | grep -E 'bad status code: 456|runOnDemand command exited' \
   | grep -oP '\[path \K[^]]+' \
   | sort | uniq -c \
   | while read -r count name; do
@@ -77,11 +80,11 @@ echo "$logs" \
       if api POST "/v3/config/paths/replace/$name" '{}' >/dev/null; then
         date +%s > "$STATE_DIR/$name.ts"
         echo "provider_error_456" > "$STATUS_DIR/$name"
-        echo "watchdog: path '$name' mis en pause ($count erreurs 456 en ${WINDOW_MIN} min), reprise dans $((COOLDOWN_SEC/60)) min"
+        echo "watchdog: path '$name' mis en pause ($count echecs de la source en ${WINDOW_MIN} min), reprise dans $((COOLDOWN_SEC/60)) min"
       else
         echo "watchdog: echec de mise en pause de '$name'" >&2
         rm -f "$STATE_DIR/$name.json"
       fi
-    done
+    done || true   # aucun echec dans la fenetre = cas normal, ne pas sortir en erreur
 
 exit 0
