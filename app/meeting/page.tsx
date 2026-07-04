@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { AdvisorComment } from "../lib/advisors";
+import { addMemory } from "../lib/memory";
 
 type Chair = { name: string; role: string; icon: string };
 
@@ -42,6 +43,7 @@ export default function MeetingPage() {
       const list: AdvisorComment[] = data.comments;
       setChair(data.chair);
       setComments(list);
+      addMemory("meeting", q); // Versailles retient la question pour mieux te connaître
 
       // Versailles ouvre, puis chaque pôle parle à son tour, puis Versailles tranche.
       setTimeout(() => setIntro(data.intro), 300);
