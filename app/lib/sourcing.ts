@@ -10,6 +10,8 @@ export type SearchMode = "quality" | "cheap";
 export type Offer = {
   platform: string;
   kind: "marketplace" | "factory";
+  // Lien direct vers la recherche du produit sur la plateforme (prêt à l'achat)
+  buyUrl: string;
   // Décomposition du coût d'atterrissage (€)
   itemPrice: number;
   shipping: number;
@@ -47,14 +49,21 @@ export type SearchResult = {
 const VAT_RATE = 0.25; // TVA Suède
 const DUTY_FREE_THRESHOLD = 150; // € : sous ce seuil, pas de droits de douane UE
 
+// `buy` : gabarit d'URL de recherche de la plateforme, {q} est remplacé par
+// le terme recherché encodé. L'utilisateur atterrit directement sur les
+// résultats du produit, prêt à commander.
 const PLATFORMS = [
-  { platform: "1688 (usine)", kind: "factory" as const, markup: 1.0, shipBase: 14, rating: 4.6, reviews: 300, years: 9, verified: true, euOk: false },
-  { platform: "Taobao", kind: "marketplace" as const, markup: 1.25, shipBase: 12, rating: 4.5, reviews: 1200, years: 8, verified: true, euOk: false },
-  { platform: "AliExpress", kind: "marketplace" as const, markup: 1.7, shipBase: 6, rating: 4.4, reviews: 5000, years: 7, verified: true, euOk: true },
-  { platform: "DHgate", kind: "marketplace" as const, markup: 1.8, shipBase: 7, rating: 4.1, reviews: 800, years: 6, verified: true, euOk: true },
-  { platform: "Temu", kind: "marketplace" as const, markup: 1.5, shipBase: 5, rating: 3.9, reviews: 2000, years: 2, verified: false, euOk: true },
-  { platform: "Pinduoduo", kind: "marketplace" as const, markup: 1.15, shipBase: 13, rating: 3.8, reviews: 600, years: 5, verified: false, euOk: false },
+  { platform: "1688 (usine)", kind: "factory" as const, markup: 1.0, shipBase: 14, rating: 4.6, reviews: 300, years: 9, verified: true, euOk: false, buy: "https://s.1688.com/selloffer/offer_search.htm?keywords={q}" },
+  { platform: "Taobao", kind: "marketplace" as const, markup: 1.25, shipBase: 12, rating: 4.5, reviews: 1200, years: 8, verified: true, euOk: false, buy: "https://s.taobao.com/search?q={q}" },
+  { platform: "AliExpress", kind: "marketplace" as const, markup: 1.7, shipBase: 6, rating: 4.4, reviews: 5000, years: 7, verified: true, euOk: true, buy: "https://www.aliexpress.com/wholesale?SearchText={q}" },
+  { platform: "DHgate", kind: "marketplace" as const, markup: 1.8, shipBase: 7, rating: 4.1, reviews: 800, years: 6, verified: true, euOk: true, buy: "https://www.dhgate.com/wholesale/search.do?searchkey={q}" },
+  { platform: "Temu", kind: "marketplace" as const, markup: 1.5, shipBase: 5, rating: 3.9, reviews: 2000, years: 2, verified: false, euOk: true, buy: "https://www.temu.com/search_result.html?search_key={q}" },
+  { platform: "Pinduoduo", kind: "marketplace" as const, markup: 1.15, shipBase: 13, rating: 3.8, reviews: 600, years: 5, verified: false, euOk: false, buy: "https://mobile.yangkeduo.com/search_result.html?search_key={q}" },
 ];
+
+function buyUrlFor(template: string, term: string): string {
+  return template.replace("{q}", encodeURIComponent(term));
+}
 
 function hash(s: string): number {
   let h = 0;
@@ -111,6 +120,7 @@ export function findOffers(product: string, mode: SearchMode = "quality"): Searc
     return {
       platform: p.platform,
       kind: p.kind,
+      buyUrl: buyUrlFor(p.buy, product.trim() || key),
       itemPrice,
       shipping,
       customsDuty,

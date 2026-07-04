@@ -125,6 +125,14 @@ export default function SilkRoutePage() {
                 {result.best.sellerYears} ans · qualité {result.best.qualityScore}/100
                 <Badges o={result.best} />
               </p>
+              <a
+                href={result.best.buyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 font-semibold text-white transition-colors hover:bg-emerald-700"
+              >
+                🛒 Acheter sur {result.best.platform} →
+              </a>
             </div>
 
             {/* Détails experts du meilleur choix */}
@@ -183,6 +191,14 @@ export default function SilkRoutePage() {
                   {result.cheaper.rating}/5
                   <Badges o={result.cheaper} />
                 </p>
+                <a
+                  href={result.cheaper.buyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-700 transition-colors hover:border-indigo-500 hover:text-indigo-600 dark:border-zinc-700 dark:text-zinc-200 dark:hover:text-indigo-400"
+                >
+                  🛒 Acheter sur {result.cheaper.platform} →
+                </a>
               </div>
             )}
 
@@ -195,6 +211,7 @@ export default function SilkRoutePage() {
                   <th className="py-2 text-right">Avis</th>
                   <th className="py-2 text-right">Qualité</th>
                   <th className="py-2 text-right">Total</th>
+                  <th className="py-2 text-right">Acheter</th>
                 </tr>
               </thead>
               <tbody>
@@ -206,21 +223,40 @@ export default function SilkRoutePage() {
                     }`}
                   >
                     <td className="py-2 text-zinc-800 dark:text-zinc-200">
-                      {o.platform}
+                      <a
+                        href={o.buyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:underline dark:text-indigo-400"
+                      >
+                        {o.platform}
+                      </a>
                       <Badges o={o} />
                     </td>
                     <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">⭐ {o.rating}</td>
                     <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{o.reviews.toLocaleString("fr-FR")}</td>
                     <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{o.qualityScore}</td>
                     <td className="py-2 text-right text-zinc-900 dark:text-zinc-50">{o.total} €</td>
+                    <td className="py-2 text-right">
+                      <a
+                        href={o.buyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-lg bg-indigo-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-indigo-700"
+                      >
+                        🛒 Acheter
+                      </a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
             <p className="mt-4 text-xs text-zinc-400">
-              « Acceptable » = original vérifié + accepté en Europe. Données de
-              démonstration ; recherche enregistrée dans la mémoire de Versailles.
+              « Acceptable » = original vérifié + accepté en Europe. Les prix et
+              scores sont estimés (démo) ; les liens « Acheter » ouvrent la vraie
+              recherche du produit sur chaque plateforme, prêts à commander.
+              Recherche enregistrée dans la mémoire de Versailles.
             </p>
           </div>
         )}
