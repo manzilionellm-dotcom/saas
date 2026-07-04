@@ -37,10 +37,33 @@ systemctl stop streamcast-panel 2>/dev/null || true
 pkill -f 'next-server' 2>/dev/null || true
 pkill -f 'next start'  2>/dev/null || true
 sleep 2
-if ss -ltn 2>/dev/null | grep -q ':3000 '; then
-  warn "Le port 3000 est encore occupe par autre chose :"
-  ss -ltnp | grep ':3000 ' || true
-  warn "Identifiez ce processus (pm2 ? docker ? autre service ?) et desactivez-le, puis relancez ce script."
+
+port_pids() { ss -ltnpH 'sport = :3000' 2>/dev/null | grep -oP 'pid=\K[0-9]+' | sort -u | tr '\n' ' '; }
+
+PIDS="$(port_pids)"
+if [ -n "${PIDS// /}" ]; then
+  warn "Le port 3000 est encore occupe (PID: $PIDS), arret force"
+  kill $PIDS 2>/dev/null || true
+  sleep 2
+  PIDS="$(port_pids)"
+  if [ -n "${PIDS// /}" ]; then
+    kill -9 $PIDS 2>/dev/null || true
+    sleep 1
+  fi
+fi
+
+PIDS="$(port_pids)"
+if [ -n "${PIDS// /}" ]; then
+  warn "Impossible de liberer le port 3000 : quelque chose relance le processus."
+  warn "Processus et parent (le parent est le superviseur a desactiver) :"
+  for p in $PIDS; do
+    ps -o pid=,ppid=,cmd= -p "$p" 2>/dev/null || true
+    pp="$(ps -o ppid= -p "$p" 2>/dev/null | tr -d ' ')"
+    if [ -n "$pp" ] && [ "$pp" != "1" ]; then
+      ps -o pid=,ppid=,cmd= -p "$pp" 2>/dev/null || true
+    fi
+  done
+  warn "Desactivez ce superviseur (ex: pm2 delete <app> ; systemctl disable --now <service>) puis relancez ce script."
   exit 1
 fi
 
