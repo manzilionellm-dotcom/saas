@@ -46,23 +46,22 @@ hlsSegmentCount: 10
 hlsSegmentDuration: 1s
 hlsAllowOrigin: "*"
 
-# RTSP/RTMP/WebRTC/SRT : désactivés — inutiles pour un bouquet TV familial,
-# et moins de ports ouverts = moins de surface d'attaque.
-rtsp: no
+# RTSP : ACTIVÉ mais en local uniquement (127.0.0.1:8554). Il ne sert PAS aux
+# spectateurs — c'est la cible interne où ffmpeg republie chaque chaîne qu'il
+# tire (voir la commande runOnDemand générée par le panel). Le pare-feu n'ouvre
+# que 8888, donc 8554 reste inaccessible de l'extérieur.
+rtsp: yes
+rtspAddress: 127.0.0.1:8554
 rtmp: no
 webrtc: no
 srt: no
 
 # --- Valeurs par défaut appliquées à tous les chemins -------------------------
 pathDefaults:
-  # À la demande : la source n'est lue que s'il y a au moins un spectateur.
-  sourceOnDemand: yes
-  # Délai avant de couper la source quand plus personne ne regarde. 60 s : un
-  # spectateur qui zappe et revient (ou recharge la page) retrouve la chaîne
-  # déjà active, sans nouveau démarrage — plus fluide et plus doux pour la source.
-  sourceOnDemandCloseAfter: 60s
-  # Temps maximum pour démarrer la source quand quelqu'un zappe dessus.
-  sourceOnDemandStartTimeout: 15s
+  # Temps maximum pour que ffmpeg démarre et produise du flux quand on zappe
+  # sur une chaîne (tirage + connexion à la source peut prendre quelques secondes).
+  runOnDemandStartTimeout: 20s
+  runOnDemandCloseAfter: 30s
 
 # --- Chaînes ------------------------------------------------------------------
 # Deux façons de remplir cette section :
@@ -71,10 +70,10 @@ pathDefaults:
 #      prêts à coller ici (remplacez la section ci-dessous).
 #   2. Manuelle : ajoutez chaque chaîne sur le modèle de l'exemple.
 paths:
-  # Exemple (à remplacer par vos chaînes autorisées) :
-  # rtnb:
-  #   source: "https://exemple.test/rtnb/live.m3u8"   # URL officielle autorisée
-  #   sourceOnDemand: yes
-
-  # Chemin de test sans source externe (mire de démarrage MediaMTX) :
-  # tous les autres chemins déclarés héritent de pathDefaults (on-demand).
+  # Rempli automatiquement par le panel (bouton « Restreamer toutes les chaînes »
+  # ou export /api/panel/export/mediamtx). Chaque chaîne ressemble à :
+  # rtnb-xxxx:
+  #   runOnDemand: "ffmpeg -user_agent \"VLC/3.0.20 LibVLC/3.0.20\" -i \"<source>\" -c copy -f rtsp rtsp://localhost:8554/$MTX_PATH"
+  #   runOnDemandRestart: yes
+  #   runOnDemandCloseAfter: 30s
+  # (ffmpeg doit être installé sur le serveur : apt install -y ffmpeg)

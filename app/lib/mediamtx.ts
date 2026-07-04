@@ -41,25 +41,48 @@ export function backupPlaybackUrl(baseUrl: string | undefined, c: Channel): stri
   return base ? `${base}/${mediamtxPath(c)}-secours/index.m3u8` : c.backupUrl;
 }
 
-// Section `paths:` de mediamtx.yml : une entrée par chaîne, en mode à la demande
-// (la source n'est tirée que si quelqu'un regarde). Utilisée par l'export
-// téléchargeable ET par la synchro « Restreamer toutes les chaînes » du panel,
-// pour qu'elles produisent exactement le même résultat.
+// Commande ffmpeg qui tire une source et la republie vers MediaMTX (RTSP interne).
+// Intérêt vs `source:` HLS direct :
+//   - se présente comme VLC (-user_agent) → contourne le filtrage User-Agent de
+//     nombreux fournisseurs qui renvoient sinon une erreur 456 ;
+//   - reconnexion automatique en cas de coupure de la source ;
+//   - -c copy : AUCUN réencodage (qualité d'origine préservée, CPU négligeable),
+//     ffmpeg ne fait que remultiplexer.
+// $MTX_PATH est remplacé par MediaMTX au lancement (nom du chemin).
+export function buildPullCommand(sourceUrl: string): string {
+  const ua = "VLC/3.0.20 LibVLC/3.0.20";
+  return (
+    `ffmpeg -hide_banner -loglevel error -user_agent "${ua}" ` +
+    `-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10 ` +
+    `-i "${sourceUrl}" -c copy -f rtsp rtsp://localhost:8554/$MTX_PATH`
+  );
+}
+
+// Section `paths:` de mediamtx.yml : une entrée par chaîne. Chaque chaîne est
+// tirée par ffmpeg (User-Agent VLC) à la demande — ou en permanence si alwaysOn.
+// Utilisée par l'export téléchargeable ET par la synchro « Restreamer toutes les
+// chaînes » du panel, pour un résultat identique.
 export function mediamtxPathsBlock(channels: Channel[]): string {
   const lines = ["paths:"];
-  const onDemand = (c: Channel) => (c.alwaysOn ? "no" : "yes");
-  for (const c of channels) {
-    lines.push(`  ${mediamtxPath(c)}:`);
-    lines.push(`    source: ${JSON.stringify(c.url)}`);
-    // alwaysOn : source tirée en permanence (pas de délai au démarrage) ;
-    // sinon à la demande (tirée seulement pendant qu'on regarde).
-    lines.push(`    sourceOnDemand: ${onDemand(c)}`);
-    // Source de secours : 2ᵉ chemin, le lecteur y bascule si la principale tombe.
-    if (c.backupUrl) {
-      lines.push(`  ${mediamtxPath(c)}-secours:`);
-      lines.push(`    source: ${JSON.stringify(c.backupUrl)}`);
-      lines.push(`    sourceOnDemand: ${onDemand(c)}`);
+  const emit = (slug: string, url: string, alwaysOn?: boolean) => {
+    lines.push(`  ${slug}:`);
+    // JSON.stringify produit une chaîne YAML double-quote valide (échappe " et \).
+    const cmd = JSON.stringify(buildPullCommand(url));
+    if (alwaysOn) {
+      // Toujours active : tirée dès le démarrage de MediaMTX, relancée si elle tombe.
+      lines.push(`    runOnInit: ${cmd}`);
+      lines.push("    runOnInitRestart: yes");
+    } else {
+      // À la demande : tirée seulement quand quelqu'un regarde, coupée après 30 s.
+      lines.push(`    runOnDemand: ${cmd}`);
+      lines.push("    runOnDemandRestart: yes");
+      lines.push("    runOnDemandCloseAfter: 30s");
     }
+  };
+  for (const c of channels) {
+    emit(mediamtxPath(c), c.url, c.alwaysOn);
+    // Source de secours : 2ᵉ chemin, le lecteur y bascule si la principale tombe.
+    if (c.backupUrl) emit(`${mediamtxPath(c)}-secours`, c.backupUrl, c.alwaysOn);
   }
   if (channels.length === 0) {
     lines.push("  # (aucune chaîne dans le panel pour l'instant)");
