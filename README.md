@@ -31,6 +31,25 @@ Server-side auth lives in `lib/` and `app/api/auth/`:
 - `GET /api/auth/me` — current user/session (Bearer token)
 - `GET /api/auth/sessions` — the user's active sessions (Bearer token)
 
+### M3U playlists (self-hosted catalog)
+
+Authenticated endpoints for serving your own channel catalog:
+
+- `POST /api/channels` — add a channel (`{ name, url, group?, logo? }`)
+- `GET /api/channels` — list the user's channels
+- `DELETE /api/channels/{id}` — remove a channel
+- `GET /api/m3u` — download an `application/x-mpegurl` playlist
+- `GET /api/stream/{channelId}` — register a playback connection and get the
+  channel's source URL
+- `GET /api/connections` — list the user's active playback connections
+
+The stream endpoint **redirects to the source URL you stored**; it does not
+proxy or re-stream, so upstream sources see the client connecting directly.
+Concurrent playback connections follow the same
+`SIMULTANEOUS_LOGIN_DETECTION_ENABLED` switch: disabled by default (unlimited
+simultaneous streams per user), opt-in single-connection enforcement when set
+to `true`.
+
 ### Simultaneous-login detection
 
 Controlled by the `SIMULTANEOUS_LOGIN_DETECTION_ENABLED` environment variable
