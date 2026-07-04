@@ -38,7 +38,8 @@ pkill -f 'next-server' 2>/dev/null || true
 pkill -f 'next start'  2>/dev/null || true
 sleep 2
 
-port_pids() { ss -ltnpH 'sport = :3000' 2>/dev/null | grep -oP 'pid=\K[0-9]+' | sort -u | tr '\n' ' '; }
+# le || true est indispensable : port libre => grep ne trouve rien => code 1 => set -e tuerait le script
+port_pids() { ss -ltnpH 'sport = :3000' 2>/dev/null | grep -oP 'pid=\K[0-9]+' | sort -u | tr '\n' ' ' || true; }
 
 PIDS="$(port_pids)"
 if [ -n "${PIDS// /}" ]; then
