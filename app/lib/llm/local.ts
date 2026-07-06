@@ -1,5 +1,6 @@
 import type { LLMProvider, LLMRequest, LLMResponse } from "./provider";
 import { approxTokens } from "../cost";
+import { dropshipLocalContent } from "../dropship/localReports";
 
 // Provider de repli : fonctionne SANS clé API (déterministe). Permet de faire
 // tourner toute l'app et de tester la chaîne avant de brancher Claude.
@@ -32,6 +33,9 @@ export class LocalProvider implements LLMProvider {
 // pour que toute la Content Factory soit testable sans clé API.
 function localContent(req: LLMRequest, locale: string): string {
   const kind = req.meta?.kind ?? "post";
+
+  // Produit Dropshipping : rapports d'agents déterministes (démo sans clé).
+  if (kind.startsWith("dropship:")) return dropshipLocalContent(req);
   const name = req.meta?.businessName ?? "votre marque";
   const platform = req.meta?.platform ?? "réseaux";
   const tag = `[${locale}·local]`;

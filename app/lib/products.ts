@@ -14,6 +14,26 @@ export type Product = {
 // Catalogue de produits SaaS (produits phares en tête)
 export const products: Product[] = [
   {
+    slug: "dropshipping-copilot",
+    name: "Dropshipping Copilot",
+    tagline: "Du choix du produit au pack de lancement complet, sans promesse creuse",
+    description:
+      "Un système multi-agents qui vous accompagne de la recherche marché jusqu'au pack de lancement e-commerce : validation fournisseur (données AutoDS réelles), marque, boutique Shopify, copy, pub Meta/TikTok, conformité UE et modèle financier. Portes d'approbation explicites, règles de blocage dur et gouvernance stricte des données — jamais de résultat garanti.",
+    category: "Intelligence",
+    icon: "📦",
+    monthlyPrice: 149,
+    features: [
+      "Pipeline multi-agents séquentiel (Scout → Market → Comité → Marque → Pub → Lancement)",
+      "Validation fournisseur sur données AutoDS réelles (verdict serveur PASS/FAIL)",
+      "Portes d'approbation explicites entre chaque étape",
+      "Modèle financier calculé côté serveur (pricing, CPA/ROAS break-even)",
+      "Checklist de conformité UE (TVA/OSS, GPSR, CE, WEEE, GDPR…)",
+      "Gouvernance des données : chaque affirmation étiquetée VERIFIED / ESTIMATE / USER MUST VERIFY / UNKNOWN",
+      "Pack de lancement exportable (Markdown / JSON)",
+    ],
+    featured: true,
+  },
+  {
     slug: "versailles",
     name: "Versailles",
     tagline: "Le chef qui rend tous vos sites incontournables sur Google et les IA",

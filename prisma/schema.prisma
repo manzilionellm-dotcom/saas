@@ -91,3 +91,148 @@ model LLMLog {
   error      String?
   createdAt  DateTime @default(now())
 }
+
+// ---------------------------------------------------------------------------
+// Produit « Dropshipping Copilot ». Miroir de app/lib/dropship/types.ts.
+// Le runtime tourne via le store JSON (.data/dropshipping.json) ; ces modèles
+// décrivent le chemin de production Prisma/Postgres (PrismaDropshipRepository).
+// ---------------------------------------------------------------------------
+
+model DropshippingProject {
+  id         String             @id @default(cuid())
+  userId     String // fourni par le SaaS parent (auth)
+  name       String
+  status     String // market_research | product_validation | ... | killed
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  candidates ProductCandidate[]
+}
+
+model ProductCandidate {
+  id                          String                    @id @default(cuid())
+  projectId                   String
+  project                     DropshippingProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rawDescription              String
+  productName                 String?
+  investmentCommitteeDecision String? // GO | HOLD | REJECT | null
+  decisionRationale           String
+  createdAt                   DateTime                  @default(now())
+  supplierInput               SupplierValidationInput?
+  compliance                  ComplianceCheck?
+  financialModel              FinancialModel?
+  adRuleSet                   AdRuleSet?
+  weeklyMetrics               WeeklyMetricEntry[]
+  reports                     AgentReport[]
+  gates                       ApprovalGate[]
+}
+
+model SupplierValidationInput {
+  id                 String           @id @default(cuid())
+  productCandidateId String           @unique
+  candidate          ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  productNameInput   String
+  productUrl         String
+  supplierName       String
+  productCost        Float?
+  shippingCost       Float?
+  deliveryDays       Int?
+  warehouseLocation  String
+  supplierRating     Float?
+  orderVolume        String
+  reviewCount        Int?
+  averageReviewScore Float?
+  recurringComplaints String
+  stockStability     String
+  priceChangeHistory String
+  availableVariants  String
+  complianceDocs     String
+  returnRefundSignals String
+  verdict            String // PASS | FAIL | NEEDS_MORE_DATA
+  verdictReasons     String // JSON string[]
+  createdAt          DateTime         @default(now())
+}
+
+model ComplianceCheck {
+  id                          String           @id @default(cuid())
+  productCandidateId          String           @unique
+  candidate                   ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  vatOss                      String // n/a | to_verify | verified
+  gpsr                        String
+  ceMarking                   String
+  batteryReg                  String
+  weee                        String
+  withdrawalRight             String
+  euResponsiblePerson         String
+  gdpr                        String
+  professionalReviewConfirmed Boolean          @default(false)
+  createdAt                   DateTime         @default(now())
+}
+
+model FinancialModel {
+  id                    String           @id @default(cuid())
+  productCandidateId    String           @unique
+  candidate             ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  productCost           Float
+  shippingCost          Float
+  transactionFeeRate    Float
+  targetGrossMarginRate Float
+  adCushionRate         Float
+  computedLandedCost    Float
+  computedSellingPrice  Float
+  computedBreakEvenCPA  Float
+  computedMaxCPA        Float
+  computedBreakEvenROAS Float
+  warnings              String // JSON string[]
+  createdAt             DateTime         @default(now())
+}
+
+model AdRuleSet {
+  id                 String           @id @default(cuid())
+  productCandidateId String           @unique
+  candidate          ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  rules              String // JSON
+  status             String // draft | active | archived
+  createdAt          DateTime         @default(now())
+}
+
+model WeeklyMetricEntry {
+  id                     String           @id @default(cuid())
+  productCandidateId     String
+  candidate              ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  weekStartDate          String
+  spend                  Float
+  revenue                Float
+  cpa                    Float
+  roas                   Float
+  ctr                    Float
+  cpc                    Float
+  conversionRate         Float
+  aov                    Float
+  refundRate             Float
+  recommendation         String // SCALE | HOLD | ITERATE | KILL
+  recommendationRationale String
+  createdAt              DateTime         @default(now())
+}
+
+model AgentReport {
+  id                 String           @id @default(cuid())
+  productCandidateId String
+  candidate          ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  agentRole          String
+  stage              String // market_research | product_validation | brand_build | marketing_plan | launch
+  content            String
+  claimsAudit        String // JSON: Claim[]
+  confidenceLevel    String // high | medium | low
+  createdAt          DateTime         @default(now())
+}
+
+model ApprovalGate {
+  id                 String           @id @default(cuid())
+  productCandidateId String
+  candidate          ProductCandidate @relation(fields: [productCandidateId], references: [id], onDelete: Cascade)
+  gateName           String // market_to_product | product_to_brand | brand_to_marketing | marketing_to_launch
+  approvedByUser     Boolean          @default(false)
+  approvedAt         DateTime?
+
+  @@unique([productCandidateId, gateName])
+}
