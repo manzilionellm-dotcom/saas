@@ -1,0 +1,803 @@
+{
+  "_doc": "Source unique AIO (llms.txt et Citation Hooks). Ne mettre ici que des faits lisibles sur le site ou déjà présents dans le JSON-LD. Toute valeur inconnue = null et listée dans aio.todo.md. Ce site est un catalogue SaaS, pas une offre d'abonnement IPTV.",
+  "siteName": "SaaS Suite",
+  "siteUrl": "https://saas-black-nu.vercel.app",
+  "jsonLdUrl": "https://saas-suite.example.com",
+  "defaultLang": "fr",
+  "currency": "EUR",
+  "toolCount": 56,
+  "categoryCount": 15,
+  "contact": null,
+  "plans": [
+    {
+      "id": "dropshipping-copilot",
+      "price": 149,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Dropshipping Copilot"
+      },
+      "summary": {
+        "fr": "Du choix du produit au pack de lancement complet, sans promesse creuse"
+      }
+    },
+    {
+      "id": "versailles",
+      "price": 299,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Versailles"
+      },
+      "summary": {
+        "fr": "Le chef qui rend tous vos sites incontournables sur Google et les IA"
+      }
+    },
+    {
+      "id": "ai-company",
+      "price": 199,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI Company"
+      },
+      "summary": {
+        "fr": "D'une idée à une entreprise complète, automatiquement"
+      }
+    },
+    {
+      "id": "internet-brain",
+      "price": 99,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Internet Brain"
+      },
+      "summary": {
+        "fr": "L'IA qui surveille Internet pour vous, 24h/24"
+      }
+    },
+    {
+      "id": "billion-dollar-scanner",
+      "price": 129,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Billion Dollar Scanner"
+      },
+      "summary": {
+        "fr": "Détectez les opportunités à un milliard avant tout le monde"
+      }
+    },
+    {
+      "id": "clone-anything-ai",
+      "price": 119,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Clone Anything AI"
+      },
+      "summary": {
+        "fr": "Reconstruisez n'importe quelle app, à votre façon"
+      }
+    },
+    {
+      "id": "world-automation-os",
+      "price": 109,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "World Automation OS"
+      },
+      "summary": {
+        "fr": "Le système d'exploitation de vos automatisations"
+      }
+    },
+    {
+      "id": "global-video-factory",
+      "price": 89,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Vidéo",
+      "name": {
+        "fr": "Global Video Factory"
+      },
+      "summary": {
+        "fr": "Une vidéo, tous les formats, toutes les langues"
+      }
+    },
+    {
+      "id": "future-trends-engine",
+      "price": 139,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Future Trends Engine"
+      },
+      "summary": {
+        "fr": "Repérez les secteurs en croissance avant tout le monde"
+      }
+    },
+    {
+      "id": "ai-acquisition-finder",
+      "price": 149,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI Acquisition Finder"
+      },
+      "summary": {
+        "fr": "Dénichez la prochaine pépite à racheter"
+      }
+    },
+    {
+      "id": "personal-ai-workforce",
+      "price": 159,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Personal AI Workforce"
+      },
+      "summary": {
+        "fr": "Votre équipe d'agents IA qui travaille pour vous"
+      }
+    },
+    {
+      "id": "ai-investment-radar",
+      "price": 129,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI Investment Radar"
+      },
+      "summary": {
+        "fr": "La recherche de marché, augmentée par l'IA"
+      }
+    },
+    {
+      "id": "universal-knowledge-engine",
+      "price": 119,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "Universal Knowledge Engine"
+      },
+      "summary": {
+        "fr": "Toute la connaissance, vérifiée et sourcée"
+      }
+    },
+    {
+      "id": "ai-os-smartphones",
+      "price": 79,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI OS for Smartphones"
+      },
+      "summary": {
+        "fr": "L'IA qui pilote votre téléphone à votre place"
+      }
+    },
+    {
+      "id": "regsentry",
+      "price": 249,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Conformité",
+      "name": {
+        "fr": "RegSentry"
+      },
+      "summary": {
+        "fr": "La conformité réglementaire en pilote automatique"
+      }
+    },
+    {
+      "id": "verticalcrm",
+      "price": 79,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Ventes",
+      "name": {
+        "fr": "VerticalCRM"
+      },
+      "summary": {
+        "fr": "Le CRM taillé pour votre métier"
+      }
+    },
+    {
+      "id": "repurposeflow",
+      "price": 39,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Marketing",
+      "name": {
+        "fr": "RepurposeFlow"
+      },
+      "summary": {
+        "fr": "Un contenu, décliné partout automatiquement"
+      }
+    },
+    {
+      "id": "silkroute",
+      "price": 49,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "E-commerce",
+      "name": {
+        "fr": "SilkRoute"
+      },
+      "summary": {
+        "fr": "Le meilleur prix depuis la Chine, livré chez vous"
+      }
+    },
+    {
+      "id": "keystone",
+      "price": 0,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Sécurité",
+      "name": {
+        "fr": "Keystone"
+      },
+      "summary": {
+        "fr": "Même si tout échoue, votre SaaS reste debout"
+      }
+    },
+    {
+      "id": "flowcrm",
+      "price": 29,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Ventes",
+      "name": {
+        "fr": "FlowCRM"
+      },
+      "summary": {
+        "fr": "Pipeline de ventes sans friction"
+      }
+    },
+    {
+      "id": "pulse-analytics",
+      "price": 49,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Analytique",
+      "name": {
+        "fr": "Pulse Analytics"
+      },
+      "summary": {
+        "fr": "Vos métriques en temps réel"
+      }
+    },
+    {
+      "id": "deskly",
+      "price": 25,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Support",
+      "name": {
+        "fr": "Deskly"
+      },
+      "summary": {
+        "fr": "Support client centralisé"
+      }
+    },
+    {
+      "id": "billwise",
+      "price": 39,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Finance",
+      "name": {
+        "fr": "BillWise"
+      },
+      "summary": {
+        "fr": "Facturation et abonnements"
+      }
+    },
+    {
+      "id": "teamsync",
+      "price": 19,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "TeamSync"
+      },
+      "summary": {
+        "fr": "Collaboration d'équipe"
+      }
+    },
+    {
+      "id": "deploybot",
+      "price": 59,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Développement",
+      "name": {
+        "fr": "DeployBot"
+      },
+      "summary": {
+        "fr": "Déploiement continu simplifié"
+      }
+    },
+    {
+      "id": "mailforge",
+      "price": 35,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Marketing",
+      "name": {
+        "fr": "MailForge"
+      },
+      "summary": {
+        "fr": "Campagnes e-mail performantes"
+      }
+    },
+    {
+      "id": "taskhive",
+      "price": 22,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "TaskHive"
+      },
+      "summary": {
+        "fr": "Gestion de projets agile"
+      }
+    },
+    {
+      "id": "securevault",
+      "price": 15,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Sécurité",
+      "name": {
+        "fr": "SecureVault"
+      },
+      "summary": {
+        "fr": "Gestion des mots de passe d'équipe"
+      }
+    },
+    {
+      "id": "shipfast",
+      "price": 45,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "E-commerce",
+      "name": {
+        "fr": "ShipFast"
+      },
+      "summary": {
+        "fr": "Logistique e-commerce"
+      }
+    },
+    {
+      "id": "insightdb",
+      "price": 69,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Développement",
+      "name": {
+        "fr": "InsightDB"
+      },
+      "summary": {
+        "fr": "Base de données managée"
+      }
+    },
+    {
+      "id": "brandkit",
+      "price": 18,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Design",
+      "name": {
+        "fr": "BrandKit"
+      },
+      "summary": {
+        "fr": "Gestion d'identité de marque"
+      }
+    },
+    {
+      "id": "callcenter-pro",
+      "price": 42,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Support",
+      "name": {
+        "fr": "CallCenter Pro"
+      },
+      "summary": {
+        "fr": "Téléphonie cloud"
+      }
+    },
+    {
+      "id": "docuflow",
+      "price": 27,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Finance",
+      "name": {
+        "fr": "DocuFlow"
+      },
+      "summary": {
+        "fr": "Signature électronique"
+      }
+    },
+    {
+      "id": "stockpilot",
+      "price": 38,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "E-commerce",
+      "name": {
+        "fr": "StockPilot"
+      },
+      "summary": {
+        "fr": "Gestion des stocks"
+      }
+    },
+    {
+      "id": "feedbackloop",
+      "price": 21,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Marketing",
+      "name": {
+        "fr": "FeedbackLoop"
+      },
+      "summary": {
+        "fr": "Enquêtes et sondages"
+      }
+    },
+    {
+      "id": "codereview-ai",
+      "price": 55,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Développement",
+      "name": {
+        "fr": "CodeReview AI"
+      },
+      "summary": {
+        "fr": "Revue de code assistée par IA"
+      }
+    },
+    {
+      "id": "timekeeper",
+      "price": 16,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "RH",
+      "name": {
+        "fr": "TimeKeeper"
+      },
+      "summary": {
+        "fr": "Suivi du temps et paie"
+      }
+    },
+    {
+      "id": "hireflow",
+      "price": 33,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "RH",
+      "name": {
+        "fr": "HireFlow"
+      },
+      "summary": {
+        "fr": "Recrutement simplifié"
+      }
+    },
+    {
+      "id": "cloudstore",
+      "price": 12,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "CloudStore"
+      },
+      "summary": {
+        "fr": "Stockage de fichiers sécurisé"
+      }
+    },
+    {
+      "id": "adboost",
+      "price": 64,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Marketing",
+      "name": {
+        "fr": "AdBoost"
+      },
+      "summary": {
+        "fr": "Gestion de campagnes publicitaires"
+      }
+    },
+    {
+      "id": "bookme",
+      "price": 14,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "BookMe"
+      },
+      "summary": {
+        "fr": "Prise de rendez-vous en ligne"
+      }
+    },
+    {
+      "id": "sentryguard",
+      "price": 31,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Sécurité",
+      "name": {
+        "fr": "SentryGuard"
+      },
+      "summary": {
+        "fr": "Surveillance et alertes"
+      }
+    },
+    {
+      "id": "learnhub",
+      "price": 28,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "RH",
+      "name": {
+        "fr": "LearnHub"
+      },
+      "summary": {
+        "fr": "Plateforme de formation"
+      }
+    },
+    {
+      "id": "chatwidget",
+      "price": 17,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Support",
+      "name": {
+        "fr": "ChatWidget"
+      },
+      "summary": {
+        "fr": "Chat en direct pour sites web"
+      }
+    },
+    {
+      "id": "expensly",
+      "price": 20,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Finance",
+      "name": {
+        "fr": "Expensly"
+      },
+      "summary": {
+        "fr": "Gestion des notes de frais"
+      }
+    },
+    {
+      "id": "socialpilot",
+      "price": 26,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Marketing",
+      "name": {
+        "fr": "SocialPilot"
+      },
+      "summary": {
+        "fr": "Gestion des réseaux sociaux"
+      }
+    },
+    {
+      "id": "formcraft",
+      "price": 13,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "FormCraft"
+      },
+      "summary": {
+        "fr": "Formulaires et collecte de données"
+      }
+    },
+    {
+      "id": "datapipe",
+      "price": 72,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Analytique",
+      "name": {
+        "fr": "DataPipe"
+      },
+      "summary": {
+        "fr": "ETL et intégration de données"
+      }
+    },
+    {
+      "id": "voicescribe",
+      "price": 24,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Productivité",
+      "name": {
+        "fr": "VoiceScribe"
+      },
+      "summary": {
+        "fr": "Transcription et notes de réunion"
+      }
+    },
+    {
+      "id": "streamcast-tv",
+      "price": 79,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Vidéo",
+      "name": {
+        "fr": "StreamCast TV"
+      },
+      "summary": {
+        "fr": "Lancez votre chaîne IPTV/OTT légale en quelques minutes"
+      }
+    },
+    {
+      "id": "streamcast-server",
+      "price": 99,
+      "billing": "mois",
+      "comingSoon": false,
+      "category": "Vidéo",
+      "name": {
+        "fr": "StreamCast Server"
+      },
+      "summary": {
+        "fr": "Votre serveur de streaming IPTV/OTT managé"
+      }
+    },
+    {
+      "id": "ai-legal-guardian",
+      "price": 89,
+      "billing": "mois",
+      "comingSoon": true,
+      "category": "Juridique",
+      "name": {
+        "fr": "AI Legal Guardian"
+      },
+      "summary": {
+        "fr": "Vos contrats et votre conformité sous surveillance"
+      }
+    },
+    {
+      "id": "ai-content-empire",
+      "price": 79,
+      "billing": "mois",
+      "comingSoon": true,
+      "category": "Marketing",
+      "name": {
+        "fr": "AI Content Empire"
+      },
+      "summary": {
+        "fr": "Une machine à contenu SEO qui ne dort jamais"
+      }
+    },
+    {
+      "id": "ai-customer-magnet",
+      "price": 99,
+      "billing": "mois",
+      "comingSoon": true,
+      "category": "Ventes",
+      "name": {
+        "fr": "AI Customer Magnet"
+      },
+      "summary": {
+        "fr": "Attirez et qualifiez vos clients automatiquement"
+      }
+    },
+    {
+      "id": "ai-market-expander",
+      "price": 129,
+      "billing": "mois",
+      "comingSoon": true,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI Market Expander"
+      },
+      "summary": {
+        "fr": "Lancez-vous sur de nouveaux marchés en un clic"
+      }
+    },
+    {
+      "id": "ai-competitor-tracker",
+      "price": 109,
+      "billing": "mois",
+      "comingSoon": true,
+      "category": "Intelligence",
+      "name": {
+        "fr": "AI Competitor Tracker"
+      },
+      "summary": {
+        "fr": "Gardez toujours une longueur d'avance"
+      }
+    }
+  ],
+  "tech": {
+    "maxResolution": null,
+    "devices": null,
+    "activationMinutes": null,
+    "bitrate": null,
+    "channelCount": null,
+    "published": [
+      "StreamCast TV (texte de fiche affiché) : plateforme IPTV/OTT pour diffuser votre propre contenu ou un contenu dont vous détenez les droits, avec gestion des abonnements, des droits et diffusion multi-écrans. Aucune résolution chiffrée.",
+      "StreamCast Server (texte de fiche affiché) : ingestion des sources, transcodage automatique, sortie HLS/DASH, protection DRM, relais, CDN et serveurs multi-régions. Aucun débit chiffré et aucun nombre de chaînes."
+    ]
+  },
+  "i18n": {
+    "fr": {
+      "description": "SaaS Suite est un catalogue démo de {count} outils logiciels. Chaque fiche affiche un prix mensuel en euros. Ce site n'est pas une offre d'abonnement IPTV. StreamCast TV et StreamCast Server décrivent la diffusion d'un contenu dont vous détenez les droits. Versailles est décrit comme un agent pour le SEO, le GEO et l'AEO.",
+      "servicesIntro": "Outils du catalogue ({siteUrl}/). Prix mensuel en euros tel qu'affiché sur la fiche, puis accroche visible. Les fiches marquées Bientôt sont affichées mais non cliquables.",
+      "faq": [
+        {
+          "q": "Combien d'outils propose la suite SaaS ?",
+          "jsonLd": "La suite propose {count} outils SaaS couvrant les ventes, le marketing, le support, le développement, la finance et plus.",
+          "a": "La suite propose {count} outils SaaS couvrant les ventes, le marketing, le support, le développement, la finance et plus. La page d'accueil les range dans un catalogue : chaque fiche montre un prix mensuel en euros. Le texte d'introduction invite à choisir les outils nécessaires et à payer à l'usage. Le pied de page présente l'ensemble comme une démo SaaS."
+        },
+        {
+          "q": "Qu'est-ce que Versailles ?",
+          "jsonLd": "Versailles est l'agent IA qui pilote tous vos sites en SEO, GEO et AEO, exécute les tâches à votre place et préside vos réunions d'équipe IA.",
+          "a": "Versailles est l'agent IA qui pilote tous vos sites en SEO, GEO et AEO, exécute les tâches à votre place et préside vos réunions d'équipe IA. Sa fiche, affichée à 299 euros par mois, ajoute qu'il se connecte à vos sites et comptes avec votre autorisation, et qu'il vise aussi Google, ChatGPT, Perplexity, Gemini et les AI Overviews."
+        },
+        {
+          "q": "Le GEO et l'AEO, qu'est-ce que c'est ?",
+          "jsonLd": "Le GEO (Generative Engine Optimization) optimise votre présence dans les IA génératives comme ChatGPT, Perplexity et Gemini. L'AEO (Answer Engine Optimization) optimise pour les moteurs de réponse.",
+          "a": "Le GEO (Generative Engine Optimization) optimise votre présence dans les IA génératives comme ChatGPT, Perplexity et Gemini. L'AEO (Answer Engine Optimization) optimise pour les moteurs de réponse. La fiche Versailles du catalogue, affichée à 299 euros par mois, dit piloter les sites en SEO, GEO et AEO, et cite Google, ChatGPT, Perplexity, Gemini et les AI Overviews."
+        },
+        {
+          "q": "Comment les prix sont-ils affichés sur le catalogue ?",
+          "a": "Chaque fiche du catalogue affiche un prix mensuel en euros. Le plus bas affiché est 0 €, pour Keystone. Le plus haut affiché est 299 €, pour Versailles. Cinq outils portent le badge Bientôt et leur fiche n'est pas un lien. L'introduction indique de payer à l'usage. La page ne publie pas de tarif de pack."
+        },
+        {
+          "q": "Qu'est-ce que le Dropshipping Copilot ?",
+          "a": "Dropshipping Copilot est une fiche du catalogue, à 149 euros par mois, catégorie Intelligence. Elle décrit un système multi-agents, de la recherche marché au pack de lancement, avec validation fournisseur sur données AutoDS, marque, boutique, textes, publicité, conformité UE et modèle financier. Elle précise que les portes d'approbation sont explicites et qu'aucun résultat n'est garanti."
+        },
+        {
+          "q": "Qu'est-ce que SilkRoute ?",
+          "a": "SilkRoute est une fiche à 49 euros par mois, catégorie E-commerce. Elle dit chercher le meilleur prix sur des sites chinois nommés, parmi lesquels Taobao, 1688, Pinduoduo, AliExpress, Alibaba, DHgate, Temu et Banggood, puis passer par un agent d'achat tel que Superbuy ou CSSBuy pour consolider et expédier. La page d'accueil propose un lien vers SilkRoute."
+        },
+        {
+          "q": "Que fait le cloneur de playlist M3U ?",
+          "a": "La page d'accueil propose un lien vers l'outil cloneur de playlist M3U. La page de cet outil indique de coller le contenu d'une playlist M3U ou son URL, qui est téléchargée, puis de choisir le nombre de copies et de récupérer les variantes. Elle demande de l'utiliser seulement avec un contenu que vous possédez ou dont vous détenez les droits."
+        },
+        {
+          "q": "Que sont StreamCast TV et StreamCast Server ?",
+          "a": "StreamCast TV, à 79 euros par mois, est décrit comme une plateforme IPTV et OTT pour diffuser votre propre contenu ou un contenu dont vous détenez les droits, avec abonnements et diffusion multi-écrans. StreamCast Server, à 99 euros par mois, cite ingestion, transcodage automatique et sortie HLS et DASH. Aucun nombre de chaînes ni débit n'est publié."
+        },
+        {
+          "q": "Qu'est-ce que Keystone ?",
+          "a": "Keystone est affiché à 0 € par mois, catégorie Sécurité. Sa fiche le présente comme un stabilisateur et un filet de sécurité : les pages ne doivent pas finir sur un écran blanc, les erreurs sont contenues et l'application redémarre. Les données critiques, comme la mémoire de Versailles, y sont décrites comme sauvegardées et restaurables."
+        },
+        {
+          "q": "Quelles catégories le catalogue regroupe-t-il ?",
+          "a": "Les fiches portent l'une des 15 catégories suivantes : Analytique, Conformité, Design, Développement, E-commerce, Finance, Intelligence, Juridique, Marketing, Productivité, RH, Support, Sécurité, Ventes et Vidéo. Le catalogue en compte {count}, chacune avec un prix mensuel en euros. Cinq d'entre elles affichent le badge Bientôt et restent non cliquables."
+        }
+      ]
+    }
+  }
+}
