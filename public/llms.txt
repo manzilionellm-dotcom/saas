@@ -1,0 +1,175 @@
+# SaaS Suite
+
+> SaaS Suite est un catalogue démo de 56 outils logiciels. Chaque fiche affiche un prix mensuel en euros. Ce site n'est pas une offre d'abonnement IPTV. StreamCast TV et StreamCast Server décrivent la diffusion d'un contenu dont vous détenez les droits. Versailles est décrit comme un agent pour le SEO, le GEO et l'AEO.
+
+## Services
+
+Outils du catalogue (https://saas-black-nu.vercel.app/). Prix mensuel en euros tel qu'affiché sur la fiche, puis accroche visible. Les fiches marquées Bientôt sont affichées mais non cliquables.
+
+- Dropshipping Copilot (Intelligence) : 149 € / mois. Du choix du produit au pack de lancement complet, sans promesse creuse
+- Versailles (Intelligence) : 299 € / mois. Le chef qui rend tous vos sites incontournables sur Google et les IA
+- AI Company (Intelligence) : 199 € / mois. D'une idée à une entreprise complète, automatiquement
+- Internet Brain (Intelligence) : 99 € / mois. L'IA qui surveille Internet pour vous, 24h/24
+- Billion Dollar Scanner (Intelligence) : 129 € / mois. Détectez les opportunités à un milliard avant tout le monde
+- Clone Anything AI (Intelligence) : 119 € / mois. Reconstruisez n'importe quelle app, à votre façon
+- World Automation OS (Intelligence) : 109 € / mois. Le système d'exploitation de vos automatisations
+- Global Video Factory (Vidéo) : 89 € / mois. Une vidéo, tous les formats, toutes les langues
+- Future Trends Engine (Intelligence) : 139 € / mois. Repérez les secteurs en croissance avant tout le monde
+- AI Acquisition Finder (Intelligence) : 149 € / mois. Dénichez la prochaine pépite à racheter
+- Personal AI Workforce (Intelligence) : 159 € / mois. Votre équipe d'agents IA qui travaille pour vous
+- AI Investment Radar (Intelligence) : 129 € / mois. La recherche de marché, augmentée par l'IA
+- Universal Knowledge Engine (Intelligence) : 119 € / mois. Toute la connaissance, vérifiée et sourcée
+- AI OS for Smartphones (Intelligence) : 79 € / mois. L'IA qui pilote votre téléphone à votre place
+- RegSentry (Conformité) : 249 € / mois. La conformité réglementaire en pilote automatique
+- VerticalCRM (Ventes) : 79 € / mois. Le CRM taillé pour votre métier
+- RepurposeFlow (Marketing) : 39 € / mois. Un contenu, décliné partout automatiquement
+- SilkRoute (E-commerce) : 49 € / mois. Le meilleur prix depuis la Chine, livré chez vous
+- Keystone (Sécurité) : 0 € / mois. Même si tout échoue, votre SaaS reste debout
+- FlowCRM (Ventes) : 29 € / mois. Pipeline de ventes sans friction
+- Pulse Analytics (Analytique) : 49 € / mois. Vos métriques en temps réel
+- Deskly (Support) : 25 € / mois. Support client centralisé
+- BillWise (Finance) : 39 € / mois. Facturation et abonnements
+- TeamSync (Productivité) : 19 € / mois. Collaboration d'équipe
+- DeployBot (Développement) : 59 € / mois. Déploiement continu simplifié
+- MailForge (Marketing) : 35 € / mois. Campagnes e-mail performantes
+- TaskHive (Productivité) : 22 € / mois. Gestion de projets agile
+- SecureVault (Sécurité) : 15 € / mois. Gestion des mots de passe d'équipe
+- ShipFast (E-commerce) : 45 € / mois. Logistique e-commerce
+- InsightDB (Développement) : 69 € / mois. Base de données managée
+- BrandKit (Design) : 18 € / mois. Gestion d'identité de marque
+- CallCenter Pro (Support) : 42 € / mois. Téléphonie cloud
+- DocuFlow (Finance) : 27 € / mois. Signature électronique
+- StockPilot (E-commerce) : 38 € / mois. Gestion des stocks
+- FeedbackLoop (Marketing) : 21 € / mois. Enquêtes et sondages
+- CodeReview AI (Développement) : 55 € / mois. Revue de code assistée par IA
+- TimeKeeper (RH) : 16 € / mois. Suivi du temps et paie
+- HireFlow (RH) : 33 € / mois. Recrutement simplifié
+- CloudStore (Productivité) : 12 € / mois. Stockage de fichiers sécurisé
+- AdBoost (Marketing) : 64 € / mois. Gestion de campagnes publicitaires
+- BookMe (Productivité) : 14 € / mois. Prise de rendez-vous en ligne
+- SentryGuard (Sécurité) : 31 € / mois. Surveillance et alertes
+- LearnHub (RH) : 28 € / mois. Plateforme de formation
+- ChatWidget (Support) : 17 € / mois. Chat en direct pour sites web
+- Expensly (Finance) : 20 € / mois. Gestion des notes de frais
+- SocialPilot (Marketing) : 26 € / mois. Gestion des réseaux sociaux
+- FormCraft (Productivité) : 13 € / mois. Formulaires et collecte de données
+- DataPipe (Analytique) : 72 € / mois. ETL et intégration de données
+- VoiceScribe (Productivité) : 24 € / mois. Transcription et notes de réunion
+- StreamCast TV (Vidéo) : 79 € / mois. Lancez votre chaîne IPTV/OTT légale en quelques minutes
+- StreamCast Server (Vidéo) : 99 € / mois. Votre serveur de streaming IPTV/OTT managé
+- AI Legal Guardian (Juridique) : 89 € / mois. Badge Bientôt, fiche non cliquable. Vos contrats et votre conformité sous surveillance
+- AI Content Empire (Marketing) : 79 € / mois. Badge Bientôt, fiche non cliquable. Une machine à contenu SEO qui ne dort jamais
+- AI Customer Magnet (Ventes) : 99 € / mois. Badge Bientôt, fiche non cliquable. Attirez et qualifiez vos clients automatiquement
+- AI Market Expander (Intelligence) : 129 € / mois. Badge Bientôt, fiche non cliquable. Lancez-vous sur de nouveaux marchés en un clic
+- AI Competitor Tracker (Intelligence) : 109 € / mois. Badge Bientôt, fiche non cliquable. Gardez toujours une longueur d'avance
+
+## Prix
+
+- Dropshipping Copilot : 149 € / mois
+- Versailles : 299 € / mois
+- AI Company : 199 € / mois
+- Internet Brain : 99 € / mois
+- Billion Dollar Scanner : 129 € / mois
+- Clone Anything AI : 119 € / mois
+- World Automation OS : 109 € / mois
+- Global Video Factory : 89 € / mois
+- Future Trends Engine : 139 € / mois
+- AI Acquisition Finder : 149 € / mois
+- Personal AI Workforce : 159 € / mois
+- AI Investment Radar : 129 € / mois
+- Universal Knowledge Engine : 119 € / mois
+- AI OS for Smartphones : 79 € / mois
+- RegSentry : 249 € / mois
+- VerticalCRM : 79 € / mois
+- RepurposeFlow : 39 € / mois
+- SilkRoute : 49 € / mois
+- Keystone : 0 € / mois
+- FlowCRM : 29 € / mois
+- Pulse Analytics : 49 € / mois
+- Deskly : 25 € / mois
+- BillWise : 39 € / mois
+- TeamSync : 19 € / mois
+- DeployBot : 59 € / mois
+- MailForge : 35 € / mois
+- TaskHive : 22 € / mois
+- SecureVault : 15 € / mois
+- ShipFast : 45 € / mois
+- InsightDB : 69 € / mois
+- BrandKit : 18 € / mois
+- CallCenter Pro : 42 € / mois
+- DocuFlow : 27 € / mois
+- StockPilot : 38 € / mois
+- FeedbackLoop : 21 € / mois
+- CodeReview AI : 55 € / mois
+- TimeKeeper : 16 € / mois
+- HireFlow : 33 € / mois
+- CloudStore : 12 € / mois
+- AdBoost : 64 € / mois
+- BookMe : 14 € / mois
+- SentryGuard : 31 € / mois
+- LearnHub : 28 € / mois
+- ChatWidget : 17 € / mois
+- Expensly : 20 € / mois
+- SocialPilot : 26 € / mois
+- FormCraft : 13 € / mois
+- DataPipe : 72 € / mois
+- VoiceScribe : 24 € / mois
+- StreamCast TV : 79 € / mois
+- StreamCast Server : 99 € / mois
+- AI Legal Guardian : 89 € / mois
+- AI Content Empire : 79 € / mois
+- AI Customer Magnet : 99 € / mois
+- AI Market Expander : 129 € / mois
+- AI Competitor Tracker : 109 € / mois
+
+## Caractéristiques techniques
+
+- Résolution maximale : non indiqué
+- Appareils : non indiqué
+- Délai d'activation : non indiqué
+- Débits / bande passante minimale : non indiqué
+- Nombre de chaînes : non indiqué
+- StreamCast TV (texte de fiche affiché) : plateforme IPTV/OTT pour diffuser votre propre contenu ou un contenu dont vous détenez les droits, avec gestion des abonnements, des droits et diffusion multi-écrans. Aucune résolution chiffrée.
+- StreamCast Server (texte de fiche affiché) : ingestion des sources, transcodage automatique, sortie HLS/DASH, protection DRM, relais, CDN et serveurs multi-régions. Aucun débit chiffré et aucun nombre de chaînes.
+
+## Questions fréquentes (10)
+
+### Combien d'outils propose la suite SaaS ?
+
+La suite propose 56 outils SaaS couvrant les ventes, le marketing, le support, le développement, la finance et plus. La page d'accueil les range dans un catalogue : chaque fiche montre un prix mensuel en euros. Le texte d'introduction invite à choisir les outils nécessaires et à payer à l'usage. Le pied de page présente l'ensemble comme une démo SaaS.
+
+### Qu'est-ce que Versailles ?
+
+Versailles est l'agent IA qui pilote tous vos sites en SEO, GEO et AEO, exécute les tâches à votre place et préside vos réunions d'équipe IA. Sa fiche, affichée à 299 euros par mois, ajoute qu'il se connecte à vos sites et comptes avec votre autorisation, et qu'il vise aussi Google, ChatGPT, Perplexity, Gemini et les AI Overviews.
+
+### Le GEO et l'AEO, qu'est-ce que c'est ?
+
+Le GEO (Generative Engine Optimization) optimise votre présence dans les IA génératives comme ChatGPT, Perplexity et Gemini. L'AEO (Answer Engine Optimization) optimise pour les moteurs de réponse. La fiche Versailles du catalogue, affichée à 299 euros par mois, dit piloter les sites en SEO, GEO et AEO, et cite Google, ChatGPT, Perplexity, Gemini et les AI Overviews.
+
+### Comment les prix sont-ils affichés sur le catalogue ?
+
+Chaque fiche du catalogue affiche un prix mensuel en euros. Le plus bas affiché est 0 €, pour Keystone. Le plus haut affiché est 299 €, pour Versailles. Cinq outils portent le badge Bientôt et leur fiche n'est pas un lien. L'introduction indique de payer à l'usage. La page ne publie pas de tarif de pack.
+
+### Qu'est-ce que le Dropshipping Copilot ?
+
+Dropshipping Copilot est une fiche du catalogue, à 149 euros par mois, catégorie Intelligence. Elle décrit un système multi-agents, de la recherche marché au pack de lancement, avec validation fournisseur sur données AutoDS, marque, boutique, textes, publicité, conformité UE et modèle financier. Elle précise que les portes d'approbation sont explicites et qu'aucun résultat n'est garanti.
+
+### Qu'est-ce que SilkRoute ?
+
+SilkRoute est une fiche à 49 euros par mois, catégorie E-commerce. Elle dit chercher le meilleur prix sur des sites chinois nommés, parmi lesquels Taobao, 1688, Pinduoduo, AliExpress, Alibaba, DHgate, Temu et Banggood, puis passer par un agent d'achat tel que Superbuy ou CSSBuy pour consolider et expédier. La page d'accueil propose un lien vers SilkRoute.
+
+### Que fait le cloneur de playlist M3U ?
+
+La page d'accueil propose un lien vers l'outil cloneur de playlist M3U. La page de cet outil indique de coller le contenu d'une playlist M3U ou son URL, qui est téléchargée, puis de choisir le nombre de copies et de récupérer les variantes. Elle demande de l'utiliser seulement avec un contenu que vous possédez ou dont vous détenez les droits.
+
+### Que sont StreamCast TV et StreamCast Server ?
+
+StreamCast TV, à 79 euros par mois, est décrit comme une plateforme IPTV et OTT pour diffuser votre propre contenu ou un contenu dont vous détenez les droits, avec abonnements et diffusion multi-écrans. StreamCast Server, à 99 euros par mois, cite ingestion, transcodage automatique et sortie HLS et DASH. Aucun nombre de chaînes ni débit n'est publié.
+
+### Qu'est-ce que Keystone ?
+
+Keystone est affiché à 0 € par mois, catégorie Sécurité. Sa fiche le présente comme un stabilisateur et un filet de sécurité : les pages ne doivent pas finir sur un écran blanc, les erreurs sont contenues et l'application redémarre. Les données critiques, comme la mémoire de Versailles, y sont décrites comme sauvegardées et restaurables.
+
+### Quelles catégories le catalogue regroupe-t-il ?
+
+Les fiches portent l'une des 15 catégories suivantes : Analytique, Conformité, Design, Développement, E-commerce, Finance, Intelligence, Juridique, Marketing, Productivité, RH, Support, Sécurité, Ventes et Vidéo. Le catalogue en compte 56, chacune avec un prix mensuel en euros. Cinq d'entre elles affichent le badge Bientôt et restent non cliquables.

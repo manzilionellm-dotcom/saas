@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { products, categories } from "./lib/products";
+import { aio, faqItems, jsonLdString } from "../lib/aio";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -19,35 +20,40 @@ const itemListJsonLd = {
   })),
 };
 
+const faq = faqItems(products.length);
+
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "Combien d'outils propose la suite SaaS ?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `La suite propose ${products.length} outils SaaS couvrant les ventes, le marketing, le support, le développement, la finance et plus.`,
+  mainEntity: faq.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.jsonLd },
+  })),
+};
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": products.map((product) => ({
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    category: product.category,
+    sku: product.slug,
+    brand: { "@type": "Brand", name: aio.siteName },
+    offers: {
+      "@type": "Offer",
+      url: `${aio.siteUrl}/`,
+      price: product.monthlyPrice.toFixed(2),
+      priceCurrency: aio.currency,
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: product.monthlyPrice.toFixed(2),
+        priceCurrency: aio.currency,
+        unitText: "mois",
       },
     },
-    {
-      "@type": "Question",
-      name: "Qu'est-ce que Versailles ?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Versailles est l'agent IA qui pilote tous vos sites en SEO, GEO et AEO, exécute les tâches à votre place et préside vos réunions d'équipe IA.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Le GEO et l'AEO, qu'est-ce que c'est ?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Le GEO (Generative Engine Optimization) optimise votre présence dans les IA génératives comme ChatGPT, Perplexity et Gemini. L'AEO (Answer Engine Optimization) optimise pour les moteurs de réponse.",
-      },
-    },
-  ],
+  })),
 };
 
 export default function Home() {
@@ -59,7 +65,11 @@ export default function Home() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(productJsonLd) }}
       />
       {/* En-tête / héro */}
       <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -208,6 +218,24 @@ export default function Home() {
             );
           })}
         </ul>
+
+        <section id="faq" className="mt-16">
+          <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+            Questions fréquentes
+          </h2>
+          <div className="mt-6 space-y-8">
+            {faq.map((item) => (
+              <div key={item.q}>
+                <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                  {item.q}
+                </h3>
+                <p className="mt-2 text-base leading-7 text-zinc-700 dark:text-zinc-300">
+                  {item.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       <footer className="border-t border-zinc-200 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
